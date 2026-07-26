@@ -482,7 +482,6 @@ export default function Home() {
       .catch(() => {
         setDestinyPreview(fallbackDestinyPreview);
         setNatalChart(fallbackNatalChart);
-        setNotice("班次表先用預覽模式開啟。正式生成需要在 Railway Variables 加入新的 OPENAI_API_KEY。");
       })
       .finally(() => setAnalysisFinished(true));
   }
