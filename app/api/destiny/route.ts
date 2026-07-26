@@ -72,7 +72,7 @@ function chapterSchema(hasHeadline: boolean) {
   return {
     type: "object",
     additionalProperties: false,
-    required: hasHeadline ? ["title", "headline", "lines"] : ["title", "lines"],
+    required: ["title", "headline", "lines"],
     properties: {
       title: { type: "string", maxLength: 14 },
       headline: { type: "string", maxLength: 18 },

@@ -273,11 +273,13 @@ function LoadingAnalysisVideo({ src, soundEnabled }: { src: string; soundEnabled
 }
 
 function NatalChartReveal({ chart }: { chart: NatalChartDisplay }) {
+  const featuredPoints = chart.points.filter((point) => ["sun", "moon", "ascendant"].includes(point.key));
+
   return (
     <div className="natal-reveal-still" aria-label="出生星盤預覽">
       <img src="/comic/story/13-natal-chart-still.png" alt="" />
       <div className="natal-chart-layer" aria-hidden="true">
-        {chart.points.map((point) => (
+        {featuredPoints.map((point) => (
           <span
             key={`${point.key}-${point.x}-${point.y}`}
             className={`natal-point natal-point-${point.key}`}
@@ -289,7 +291,7 @@ function NatalChartReveal({ chart }: { chart: NatalChartDisplay }) {
       </div>
       <div className="natal-summary">
         <span>{chart.title}</span>
-        <strong>{chart.summary.join(" · ")}</strong>
+        <strong>{chart.summary.join(" ｜ ")}</strong>
       </div>
     </div>
   );
@@ -512,7 +514,7 @@ export default function Home() {
       case "birth":
         return isValidBirthDate(birth);
       case "time":
-        return unknownTime || isValidBirthTime(time);
+        return unknownTime || time.length === 0 || isValidBirthTime(time);
       case "birthplace":
         return birthplace.trim().length > 0;
       case "concern":
@@ -527,6 +529,9 @@ export default function Home() {
   }
 
   function nextIntakeStep() {
+    if (intakeStep === "time" && time.length === 0) {
+      setUnknownTime(true);
+    }
     const nextStep = intakeSteps[stepIndex + 1];
     if (nextStep) setIntakeStep(nextStep);
   }
@@ -690,7 +695,10 @@ export default function Home() {
                       出生時間
                       <input
                         value={time}
-                        onChange={(event) => setTime(formatTimeInput(event.target.value))}
+                        onChange={(event) => {
+                          setUnknownTime(false);
+                          setTime(formatTimeInput(event.target.value));
+                        }}
                         placeholder="13:30"
                         disabled={unknownTime}
                         inputMode="numeric"
@@ -699,7 +707,10 @@ export default function Home() {
                     </label>
                     <button
                       className={unknownTime ? "pill-option active" : "pill-option"}
-                      onClick={() => setUnknownTime((value) => !value)}
+                      onClick={() => {
+                        setTime("");
+                        setUnknownTime((value) => !value);
+                      }}
                       type="button"
                     >
                       不知道時間
