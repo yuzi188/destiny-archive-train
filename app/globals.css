@@ -682,9 +682,10 @@ input:focus {
 .archive-page span {
   display: block;
   margin-bottom: 10px;
-  color: #9d2f2f;
+  color: #6f4a26;
   font-size: 13px;
-  font-weight: 900;
+  font-weight: 700;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.22), 0 0 10px rgba(216, 179, 109, 0.18);
 }
 
 .story-copy span {
@@ -873,9 +874,9 @@ input:focus {
 
 .analysis-page span {
   margin: 0 0 24px;
-  color: #aa3131;
+  color: #6f4a26;
   font-size: 14px;
-  font-weight: 900;
+  font-weight: 700;
   line-height: 1.2;
 }
 
@@ -910,12 +911,12 @@ input:focus {
 .report-page span,
 .split-page span {
   margin-bottom: 22px;
-  color: #b53232;
+  color: #6f4a26;
   font-size: 20px;
-  font-weight: 900;
+  font-weight: 700;
   line-height: 1.25;
   letter-spacing: 0;
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.18);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.22), 0 0 10px rgba(216, 179, 109, 0.18);
 }
 
 .report-page strong {
