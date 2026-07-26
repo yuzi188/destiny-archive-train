@@ -501,7 +501,6 @@ export default function Home() {
       })
       .catch(() => {
         setAnalysisFinished(false);
-        setNotice("班次表尚未校準完成，請重新調度一次。");
       });
   }
 
@@ -870,11 +869,6 @@ export default function Home() {
                   翻開第一頁
                 </button>
               )}
-              {!analysisFinished && notice && (
-                <button className="primary-button analysis-button" onClick={startAnalysis}>
-                  重新調度班次
-                </button>
-              )}
             </div>
           </section>
         )}
@@ -1079,7 +1073,7 @@ export default function Home() {
               <div className="claim-card">
                 <span>寄送信箱</span>
                 <strong>{reportRecipientEmail}</strong>
-                <p>內容包含完整班次表、命格三叉分析、星盤與八字摘要、後續章節解讀。</p>
+                <p>內容包含約 1 萬字完整報告、命格三叉分析、八字星盤、愛情財富職涯與未來路線。</p>
               </div>
               <label className="check-row">
                 <input

@@ -39,6 +39,29 @@ function clean(value: unknown) {
   return typeof value === "string" ? value.trim() : "";
 }
 
+function extractOutputText(result: unknown) {
+  const response = result as {
+    output_text?: string;
+    output?: Array<{ content?: Array<{ text?: string; type?: string }> }>;
+  };
+
+  if (typeof response.output_text === "string") return response.output_text.trim();
+
+  return (
+    response.output
+      ?.flatMap((item) => item.content ?? [])
+      .map((content) => content.text)
+      .filter(Boolean)
+      .join("\n")
+      .trim() || ""
+  );
+}
+
+function extractChatText(result: unknown) {
+  const response = result as { choices?: Array<{ message?: { content?: string } }> };
+  return response.choices?.[0]?.message?.content?.trim() || "";
+}
+
 function renderReport(payload: ClaimRequest) {
   const passenger = payload.passenger ?? {};
   const preview = payload.preview ?? {};
@@ -81,6 +104,92 @@ function renderReport(payload: ClaimRequest) {
   return lines.join("\n");
 }
 
+async function generateLongReport(payload: ClaimRequest) {
+  const apiKey = process.env.OPENAI_API_KEY;
+  const model = process.env.OPENAI_MODEL || "gpt-5.6";
+  if (!apiKey) return renderReport(payload);
+
+  const passenger = payload.passenger ?? {};
+  const prompt = [
+    "你是《第 13 月台｜Destiny Archive》的完整報告書記官。",
+    "請根據使用者資料、免費預覽內容、星盤摘要，生成一份繁體中文完整命運報告。",
+    "報告目標長度：約 10000 個繁體中文字。不可只輸出摘要，不可少於 8000 字。",
+    "這是娛樂與自我反思用途，不可做醫療、法律、投資、保證命運的斷言。",
+    "寫作風格：高級、神祕、小說感，但要白話好懂。每個命理判斷後都要加生活化解釋。",
+    "必須保留免費預覽裡原本的判讀方向，再延伸成完整分析。",
+    "報告必須包含以下章節：",
+    "1. 封面資料與閱讀說明",
+    "2. 八字核心：日主、五行傾向、十神傾向、性格形成",
+    "3. 星盤核心：太陽、月亮、上升與內在矛盾",
+    "4. 三叉命格：八字、星盤、使用者問題三者交會後的 5 種命格分類",
+    "5. 我看到的你：外在行為、壓力反應、做事模式",
+    "6. 真正的你：情緒需求、關係中的防衛、沉默原因",
+    "7. 重複的人生路線：為什麼同一種問題反覆出現",
+    "8. 愛情完整章：吸引對象、相處模式、容易卡住的點、建議",
+    "9. 財富完整章：賺錢模式、風險、適合累積的方式、建議",
+    "10. 職涯完整章：適合的位置、合作方式、卡關原因、下一步",
+    "11. 最大盲點：最容易誤判自己的地方",
+    "12. 未來 12 個月路線：分成近期、中期、後期三段",
+    "13. 改變建議：三個可執行行動",
+    "14. 結語：列車長凜的收束台詞",
+    "格式規則：",
+    "每章都要有標題。段落要短，適合手機閱讀。不要 Markdown 表格。不要 emoji。",
+    "每章至少 500 字，重點章節愛情、財富、職涯各至少 900 字。",
+    "若資料不足，請明確說『此處以已提供資料推估』，但仍要完成報告。",
+    `使用者資料：${JSON.stringify(passenger)}`,
+    `免費預覽：${JSON.stringify(payload.preview ?? {})}`,
+    `星盤顯示資料：${JSON.stringify(payload.chartDisplay ?? {})}`,
+  ].join("\n");
+
+  const responseBody = {
+    model,
+    input: [
+      {
+        role: "user",
+        content: [{ type: "input_text", text: prompt }],
+      },
+    ],
+    max_output_tokens: 18000,
+  };
+
+  const upstream = await fetch("https://api.openai.com/v1/responses", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(responseBody),
+  });
+
+  const result = await upstream.json();
+  if (upstream.ok) {
+    const text = extractOutputText(result);
+    if (text) return text;
+  }
+
+  const chatFallback = await fetch("https://api.openai.com/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model,
+      messages: [{ role: "user", content: prompt }],
+      max_completion_tokens: 18000,
+    }),
+  });
+
+  const chatResult = await chatFallback.json();
+  if (!chatFallback.ok) {
+    throw new Error(chatResult?.error?.message || result?.error?.message || "full report generation failed");
+  }
+
+  const text = extractChatText(chatResult);
+  if (!text) throw new Error("empty full report response");
+  return text;
+}
+
 async function sendWithResend(to: string, subject: string, text: string) {
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) return { sent: false, reason: "missing_resend_key" };
@@ -111,10 +220,10 @@ async function sendWithResend(to: string, subject: string, text: string) {
 export async function POST(request: Request) {
   const payload = (await request.json()) as ClaimRequest;
   const recipient = clean(payload.recipientEmail) || fallbackRecipient;
-  const report = renderReport(payload);
   const subject = `第 13 月台完整命運檔案｜${clean(payload.passenger?.name) || "乘客"}`;
 
   try {
+    const report = await generateLongReport(payload);
     const result = await sendWithResend(recipient, subject, report);
     if (result.sent) {
       return Response.json({
