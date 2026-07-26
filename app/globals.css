@@ -240,7 +240,7 @@ button:disabled {
   background: radial-gradient(circle, rgba(13, 21, 32, 0.92), rgba(7, 8, 9, 0.42));
   box-shadow: 0 0 14px rgba(142, 201, 255, 0.52), 0 0 22px rgba(237, 205, 142, 0.28);
   color: #f6dfaa;
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--archive-title-font);
   font-size: 15px;
   font-weight: 800;
   line-height: 1;
@@ -256,25 +256,35 @@ button:disabled {
 
 .natal-summary {
   position: absolute;
-  left: 26px;
-  right: 26px;
-  bottom: 154px;
+  left: 50%;
+  top: 39%;
   z-index: 3;
+  width: min(58vw, 278px);
   display: grid;
-  gap: 5px;
-  color: rgba(247, 239, 228, 0.92);
-  text-shadow: 0 4px 18px rgba(0, 0, 0, 0.85);
+  gap: 4px;
+  color: rgba(23, 17, 10, 0.78);
+  text-align: center;
+  transform: translateX(-50%) perspective(900px) rotateX(1deg) rotateZ(-0.35deg);
+  transform-origin: 50% 50%;
+  text-shadow: 0 1px 0 rgba(255, 248, 225, 0.22), 0 0 1px rgba(20, 17, 14, 0.18);
+  pointer-events: none;
 }
 
 .natal-summary span {
-  color: var(--gold);
-  font-size: 13px;
-  font-weight: 800;
+  color: #a8782d;
+  font-family: var(--archive-title-font);
+  font-size: 18px;
+  font-weight: 900;
+  line-height: 1.2;
+  text-shadow: 0 1px 0 rgba(255, 248, 225, 0.38), 0 0 14px rgba(216, 179, 109, 0.2);
 }
 
 .natal-summary strong {
-  font-size: 18px;
-  line-height: 1.35;
+  color: rgba(22, 16, 10, 0.76);
+  font-family: var(--archive-hand-font);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.5;
 }
 
 .chart-reveal-copy {
