@@ -120,6 +120,22 @@ button:disabled {
   transition: width 260ms ease;
 }
 
+.sound-button {
+  position: fixed;
+  z-index: 45;
+  top: 64px;
+  right: max(16px, calc((100vw - 480px) / 2 + 16px));
+  height: 34px;
+  padding: 0 12px;
+  border: 1px solid rgba(247, 239, 228, 0.24);
+  border-radius: 999px;
+  background: rgba(17, 21, 23, 0.7);
+  color: rgba(247, 239, 228, 0.92);
+  font-size: 13px;
+  font-weight: 800;
+  backdrop-filter: blur(14px);
+}
+
 .scene {
   position: relative;
   min-height: 100vh;
@@ -164,6 +180,41 @@ button:disabled {
   position: relative;
   z-index: 2;
   padding: 0 22px;
+}
+
+.start-gate {
+  position: relative;
+  z-index: 3;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 92px 22px 42px;
+  color: var(--foreground);
+  text-align: center;
+}
+
+.start-gate h1 {
+  margin-bottom: 18px;
+  font-size: 34px;
+  line-height: 1.22;
+  text-shadow: 0 4px 30px rgba(0, 0, 0, 0.96);
+}
+
+.delayed-copy {
+  animation: delayedCopyIn 520ms ease both;
+}
+
+@keyframes delayedCopyIn {
+  from {
+    opacity: 0;
+    translate: 0 10px;
+  }
+
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
 }
 
 .scene-copy.bottom {

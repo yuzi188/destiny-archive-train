@@ -74,6 +74,7 @@ const stageOrder: Stage[] = [
   "free",
   "payTeaser",
 ];
+const gatedVideoStages: Stage[] = ["opening", "enter", "dialogue", "intake", "reveal", "teaser", "payTeaser"];
 
 const formatPrice = (value: number) => `NT$${value.toLocaleString("zh-TW")}`;
 
@@ -94,25 +95,32 @@ function StageVideo({
   src,
   loop = true,
   dim = "strong",
+  onEnded,
+  soundEnabled,
+  shouldPlay = true,
 }: {
   src: string;
   loop?: boolean;
   dim?: "soft" | "strong";
+  onEnded?: () => void;
+  soundEnabled: boolean;
+  shouldPlay?: boolean;
 }) {
   return (
     <video
       className={`stage-video ${dim}`}
       src={src}
-      autoPlay
-      muted
+      autoPlay={shouldPlay}
+      muted={!soundEnabled}
       loop={loop}
       playsInline
       preload="auto"
+      onEnded={onEnded}
     />
   );
 }
 
-function LoadingAnalysisVideo({ src }: { src: string }) {
+function LoadingAnalysisVideo({ src, soundEnabled }: { src: string; soundEnabled: boolean }) {
   function loopWatchSegment(event: SyntheticEvent<HTMLVideoElement>) {
     const video = event.currentTarget;
     const restartAt = video.duration ? Math.min(6.2, Math.max(0, video.duration - 0.8)) : 6.2;
@@ -125,7 +133,7 @@ function LoadingAnalysisVideo({ src }: { src: string }) {
       className="stage-video soft"
       src={src}
       autoPlay
-      muted
+      muted={!soundEnabled}
       playsInline
       preload="auto"
       onEnded={loopWatchSegment}
@@ -150,6 +158,9 @@ export default function Home() {
   const [marketing, setMarketing] = useState(false);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [notice, setNotice] = useState("");
+  const [videoEnded, setVideoEnded] = useState(false);
+  const [soundEnabled, setSoundEnabled] = useState(false);
+  const [journeyStarted, setJourneyStarted] = useState(false);
 
   const displayName = name.trim() || "乘客";
   const selected = products[selectedProduct];
@@ -174,6 +185,8 @@ export default function Home() {
   );
   const [loadingLine, setLoadingLine] = useState(0);
   const [analysisReady, setAnalysisReady] = useState(false);
+  const isVideoGateReady = !gatedVideoStages.includes(stage) || videoEnded;
+  const hasVideoStage = stage !== "free";
 
   useEffect(() => {
     if (stage !== "loading") return;
@@ -189,10 +202,16 @@ export default function Home() {
     };
   }, [loadingText.length, stage]);
 
+  useEffect(() => {
+    setVideoEnded(!gatedVideoStages.includes(stage));
+  }, [stage]);
+
   function resetFlow() {
     setStage("opening");
     setIntakeStep("name");
     setCheckoutOpen(false);
+    setJourneyStarted(false);
+    setSoundEnabled(false);
   }
 
   function openIntake() {
@@ -236,6 +255,22 @@ export default function Home() {
     if (previousStep) setIntakeStep(previousStep);
   }
 
+  function enableSound() {
+    setSoundEnabled(true);
+    window.requestAnimationFrame(() => {
+      document.querySelectorAll<HTMLVideoElement>("video").forEach((video) => {
+        video.muted = false;
+        video.volume = 1;
+        void video.play().catch(() => undefined);
+      });
+    });
+  }
+
+  function startJourney() {
+    setJourneyStarted(true);
+    enableSound();
+  }
+
   return (
     <main className={stage === "intake" ? "site-shell intake-active" : "site-shell"}>
       <section className="phone-frame" aria-label="第 13 月台互動體驗">
@@ -251,53 +286,81 @@ export default function Home() {
           </button>
         </div>
 
+        {hasVideoStage && journeyStarted && !soundEnabled && (
+          <button className="sound-button" onClick={enableSound} type="button">
+            開聲音
+          </button>
+        )}
+
         {stage === "opening" && (
           <section className="scene scene-hero">
-            <StageVideo src={videos.opening} />
-            <div className="scene-copy bottom">
-              <p className="kicker">今晚 23:13</p>
-              <h1>第 13 月台</h1>
-              <p>你收到一張沒有寄件人的車票。目的地寫著：你一直不敢去的人生。</p>
-              <button className="primary-button" onClick={() => setStage("enter")}>
-                查看手上的票
-              </button>
-            </div>
+            <StageVideo
+              src={videos.opening}
+              loop={false}
+              soundEnabled={soundEnabled}
+              shouldPlay={journeyStarted}
+              onEnded={() => setVideoEnded(true)}
+            />
+            {!journeyStarted && (
+              <div className="start-gate">
+                <p className="kicker">第 13 月台</p>
+                <h1>命運列車即將進站</h1>
+                <button className="primary-button" onClick={startJourney} type="button">
+                  啟程
+                </button>
+              </div>
+            )}
+            {isVideoGateReady && (
+              <div className="scene-copy bottom delayed-copy">
+                <p className="kicker">今晚 23:13</p>
+                <h1>第 13 月台</h1>
+                <p>你收到一張沒有寄件人的車票。目的地寫著：你一直不敢去的人生。</p>
+                <button className="primary-button" onClick={() => setStage("enter")}>
+                  查看手上的票
+                </button>
+              </div>
+            )}
           </section>
         )}
 
         {stage === "enter" && (
           <section className="scene cinematic-scene">
-            <StageVideo src={videos.enter} loop={false} />
-            <div className="scene-copy bottom">
-              <p className="line">你手上的票，不是通往遠方，是通往你一直避開的那一站。</p>
-              <button className="primary-button" onClick={() => setStage("dialogue")}>
-                進入車廂
-              </button>
-            </div>
+            <StageVideo src={videos.enter} loop={false} soundEnabled={soundEnabled} onEnded={() => setVideoEnded(true)} />
+            {isVideoGateReady && (
+              <div className="scene-copy bottom delayed-copy">
+                <p className="line">你手上的票，不是通往遠方，是通往你一直避開的那一站。</p>
+                <button className="primary-button" onClick={() => setStage("dialogue")}>
+                  進入車廂
+                </button>
+              </div>
+            )}
           </section>
         )}
 
         {stage === "dialogue" && (
           <section className="scene cinematic-scene">
-            <StageVideo src={videos.dialogue} loop={false} />
-            <div className="scene-copy bottom">
-              <p className="line">你終於來了。第 13 月台，從不等錯的人。</p>
-              <div className="choice-list">
-                <button className="choice-button" onClick={openIntake}>
-                  把車票交給凜
-                </button>
-                <button className="choice-button" onClick={openIntake}>
-                  坐下，讓他核對
-                </button>
+            <StageVideo src={videos.dialogue} loop={false} soundEnabled={soundEnabled} onEnded={() => setVideoEnded(true)} />
+            {isVideoGateReady && (
+              <div className="scene-copy bottom delayed-copy">
+                <p className="line">你終於來了。第 13 月台，從不等錯的人。</p>
+                <div className="choice-list">
+                  <button className="choice-button" onClick={openIntake}>
+                    把車票交給凜
+                  </button>
+                  <button className="choice-button" onClick={openIntake}>
+                    坐下，讓他核對
+                  </button>
+                </div>
               </div>
-            </div>
+            )}
           </section>
         )}
 
         {stage === "intake" && (
           <section className="scene intake-scene">
-            <StageVideo src={videos.intake} />
-            <div className="scene-copy form-panel">
+            <StageVideo src={videos.intake} loop={false} soundEnabled={soundEnabled} onEnded={() => setVideoEnded(true)} />
+            {isVideoGateReady && (
+            <div className="scene-copy form-panel delayed-copy">
               <p className="kicker">核對車票</p>
               <h2 className="intake-title">姓名。生日。出生地。還有你最近最想逃開的問題。</h2>
 
@@ -459,12 +522,13 @@ export default function Home() {
                 </div>
               </div>
             </div>
+            )}
           </section>
         )}
 
         {stage === "loading" && (
           <section className="scene loading-scene" aria-live="polite">
-            <LoadingAnalysisVideo src={videos.loading} />
+            <LoadingAnalysisVideo src={videos.loading} soundEnabled={soundEnabled} />
             <div className="scene-copy center">
               <p className="kicker">命運檔案調度中</p>
               <h2>{loadingText[loadingLine]}</h2>
@@ -484,25 +548,29 @@ export default function Home() {
 
         {stage === "reveal" && (
           <section className="scene cinematic-scene">
-            <StageVideo src={videos.reveal} loop={false} dim="soft" />
-            <div className="scene-copy bottom">
-              <p className="line">你的路線沒有消失，只是被你自己延後了。</p>
-              <button className="primary-button" onClick={() => setStage("teaser")}>
-                看見完整班次表
-              </button>
-            </div>
+            <StageVideo src={videos.reveal} loop={false} dim="soft" soundEnabled={soundEnabled} onEnded={() => setVideoEnded(true)} />
+            {isVideoGateReady && (
+              <div className="scene-copy bottom delayed-copy">
+                <p className="line">你的路線沒有消失，只是被你自己延後了。</p>
+                <button className="primary-button" onClick={() => setStage("teaser")}>
+                  看見完整班次表
+                </button>
+              </div>
+            )}
           </section>
         )}
 
         {stage === "teaser" && (
           <section className="scene cinematic-scene">
-            <StageVideo src={videos.teaser} loop={false} />
-            <div className="scene-copy bottom">
-              <p className="line">完整班次表在我手上。要不要看看，下一站會把你帶去哪？</p>
-              <button className="primary-button" onClick={() => setStage("free")}>
-                翻開第一頁
-              </button>
-            </div>
+            <StageVideo src={videos.teaser} loop={false} soundEnabled={soundEnabled} onEnded={() => setVideoEnded(true)} />
+            {isVideoGateReady && (
+              <div className="scene-copy bottom delayed-copy">
+                <p className="line">完整班次表在我手上。要不要看看，下一站會把你帶去哪？</p>
+                <button className="primary-button" onClick={() => setStage("free")}>
+                  翻開第一頁
+                </button>
+              </div>
+            )}
           </section>
         )}
 
@@ -629,13 +697,15 @@ export default function Home() {
 
         {stage === "payTeaser" && (
           <section className="scene cinematic-scene">
-            <StageVideo src={videos.payTeaser} loop={false} />
-            <div className="scene-copy bottom">
-              <p className="line">免費路線到這裡。後面的班次，要不要繼續查？</p>
-              <button className="primary-button" onClick={() => setCheckoutOpen(true)}>
-                解鎖完整班次表
-              </button>
-            </div>
+            <StageVideo src={videos.payTeaser} loop={false} soundEnabled={soundEnabled} onEnded={() => setVideoEnded(true)} />
+            {isVideoGateReady && (
+              <div className="scene-copy bottom delayed-copy">
+                <p className="line">免費路線到這裡。後面的班次，要不要繼續查？</p>
+                <button className="primary-button" onClick={() => setCheckoutOpen(true)}>
+                  解鎖完整班次表
+                </button>
+              </div>
+            )}
           </section>
         )}
 
