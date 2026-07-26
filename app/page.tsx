@@ -41,8 +41,9 @@ type DestinyPreview = {
   };
   profile: {
     title: string;
-    core: string;
-    bars: Array<{ label: string; value: number }>;
+    destinyType: string;
+    triangulation: string[];
+    lines: string[];
   };
   locked: {
     title: string;
@@ -149,13 +150,9 @@ const fallbackDestinyPreview: DestinyPreview = {
   },
   profile: {
     title: "第四章｜你的命格",
-    core: "核心人格　Leader",
-    bars: [
-      { label: "火元素", value: 72 },
-      { label: "理性", value: 58 },
-      { label: "情感", value: 34 },
-      { label: "行動力", value: 68 },
-    ],
+    destinyType: "開路者",
+    triangulation: ["八字顯示你習慣先承擔壓力。", "星盤顯示你需要被看見，也害怕失控。", "你逃開的問題，剛好落在同一個選擇。"],
+    lines: ["這不是偶然。", "三條線交會後，指向同一種命格。"],
   },
   locked: {
     title: "後續章節已鎖住",
@@ -758,9 +755,12 @@ export default function Home() {
             <article className="story-panel book-panel aligned-book" style={{ backgroundImage: "url('/comic/story/09-destiny-profile.png')" }}>
               <div className="archive-page page-overlay report-page">
                 <span>{destinyPreview.profile.title}</span>
-                <strong>{destinyPreview.profile.core}</strong>
-                {destinyPreview.profile.bars.map((bar) => (
-                  <p key={bar.label}>{bar.label} <b style={{ width: `${bar.value}%` }} /></p>
+                <strong>{destinyPreview.profile.destinyType}</strong>
+                {destinyPreview.profile.triangulation.map((line) => (
+                  <p key={line}>{line}</p>
+                ))}
+                {destinyPreview.profile.lines.map((line) => (
+                  <em key={line}>{line}</em>
                 ))}
               </div>
             </article>

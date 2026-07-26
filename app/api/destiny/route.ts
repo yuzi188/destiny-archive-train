@@ -1,3 +1,5 @@
+import { calculateDestinyChart } from "./calculations.js";
+
 type DestinyRequest = {
   name?: string;
   birth?: string;
@@ -28,23 +30,21 @@ const jsonSchema = {
     profile: {
       type: "object",
       additionalProperties: false,
-      required: ["title", "core", "bars"],
+      required: ["title", "destinyType", "triangulation", "lines"],
       properties: {
         title: { type: "string" },
-        core: { type: "string" },
-        bars: {
+        destinyType: { type: "string" },
+        triangulation: {
           type: "array",
-          minItems: 4,
-          maxItems: 4,
-          items: {
-            type: "object",
-            additionalProperties: false,
-            required: ["label", "value"],
-            properties: {
-              label: { type: "string" },
-              value: { type: "number", minimum: 12, maximum: 92 },
-            },
-          },
+          minItems: 3,
+          maxItems: 3,
+          items: { type: "string" },
+        },
+        lines: {
+          type: "array",
+          minItems: 2,
+          maxItems: 3,
+          items: { type: "string" },
         },
       },
     },
@@ -126,13 +126,31 @@ export async function POST(request: Request) {
     return Response.json({ error: "missing required passenger fields" }, { status: 400 });
   }
 
+  let calculatedChart;
+  try {
+    calculatedChart = calculateDestinyChart({
+      birth: passenger.birth,
+      time: payload.time,
+      unknownTime: payload.unknownTime,
+      birthplace: passenger.birthplace,
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "birth chart calculation failed";
+    return Response.json({ error: message }, { status: 400 });
+  }
+
   const prompt = [
     "你是《第 13 月台》互動命運列車的書記官。",
-    "請根據乘客資料，產生免費預覽用的 Destiny Archive 書頁文案。",
-    "風格：繁體中文、神祕、高級、像小說揭露，不恐怖，不要提 AI、GPT、八字排盤細節。",
+    "請根據後端已計算完成的八字與西洋星盤資料，產生免費預覽用的 Destiny Archive 書頁文案。",
+    "你不能重新推算盤面，也不能編造盤面；只能解讀 calculatedChart 裡的資料。",
+    "必須把八字與星盤融合：四柱/日主/五行/十神/命宮，加上太陽/月亮/內行星落座。時間明確時可使用上升星座；若時間未知，不要提上升。",
+    "第四章 profile 不要輸出能力條。請用「三叉分析」文字呈現：八字命格、星盤人格、使用者問題三者交叉，最後歸類為 5 種命格之一。",
+    "5 種命格只能從這五個選：開路者、守夜者、承擔者、轉譯者、重啟者。destinyType 必須是其中之一，triangulation 三句分別對應八字、星盤、問題，lines 說明為什麼命中。",
+    "風格：繁體中文、神祕、高級、像小說揭露，不恐怖，不要提 AI、GPT。",
     "限制：這是娛樂/自我反思內容，不要做醫療、法律、投資、保證命運的斷言。",
     "每句短一點，適合手機漫畫書頁；不要使用 emoji；不要輸出 Markdown。",
     `乘客資料：${JSON.stringify(passenger)}`,
+    `calculatedChart：${JSON.stringify(calculatedChart)}`,
   ].join("\n");
 
   const upstream = await fetch("https://api.openai.com/v1/responses", {
