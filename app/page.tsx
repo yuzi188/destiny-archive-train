@@ -356,6 +356,7 @@ export default function Home() {
 
   function openIntake() {
     setIntakeStep("name");
+    setVideoEnded(true);
     setStage("intake");
   }
 
@@ -524,7 +525,12 @@ export default function Home() {
 
         {stage === "intake" && (
           <section className="scene intake-scene">
-            <StageVideo src={videos.intake} loop={false} soundEnabled={soundEnabled} />
+            <StageVideo
+              src={videos.intake}
+              loop={false}
+              soundEnabled={soundEnabled}
+              onEnded={() => setVideoEnded(true)}
+            />
             <div className="scene-copy form-panel delayed-copy">
               <p className="kicker">核對車票</p>
               <h2 className="intake-title">姓名。生日。出生地。還有你最近最想逃開的問題。</h2>
