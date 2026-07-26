@@ -11,6 +11,8 @@
   --red: #d44c4c;
   --gold: #d8b36d;
   --wood: #23140d;
+  --app-viewport-height: 100dvh;
+  --keyboard-offset: 0px;
 }
 
 @theme inline {
@@ -63,8 +65,14 @@ button:disabled {
 }
 
 .site-shell.intake-active {
-  height: 100dvh;
-  min-height: 100dvh;
+  height: var(--app-viewport-height);
+  min-height: var(--app-viewport-height);
+  overflow: hidden;
+}
+
+.site-shell.intake-active .phone-frame {
+  height: var(--app-viewport-height);
+  min-height: var(--app-viewport-height);
   overflow: hidden;
 }
 
@@ -144,8 +152,8 @@ button:disabled {
 }
 
 .intake-scene {
-  height: 100dvh;
-  min-height: 100dvh;
+  height: var(--app-viewport-height);
+  min-height: var(--app-viewport-height);
   overflow: hidden;
 }
 
@@ -269,7 +277,7 @@ button:disabled {
   position: fixed;
   z-index: 25;
   left: 50%;
-  bottom: max(8px, env(safe-area-inset-bottom));
+  bottom: calc(max(8px, env(safe-area-inset-bottom)) + var(--keyboard-offset));
   width: min(100vw, 480px);
   min-height: auto;
   display: flex;
@@ -277,6 +285,7 @@ button:disabled {
   justify-content: flex-end;
   padding: 0 18px;
   transform: translateX(-50%);
+  transition: bottom 180ms ease;
 }
 
 .kicker,
@@ -379,10 +388,18 @@ p {
   line-height: 1.34;
 }
 
+.site-shell.intake-active .intake-title {
+  max-height: 56px;
+  overflow: hidden;
+}
+
 .ticket-step-card {
   display: grid;
   gap: 10px;
   min-height: 154px;
+  max-height: min(322px, calc(var(--app-viewport-height) - 220px));
+  overflow-y: auto;
+  overscroll-behavior: contain;
   margin: 4px 0 0;
   padding: 12px;
   border: 1px solid rgba(247, 239, 228, 0.13);

@@ -284,6 +284,41 @@ export default function Home() {
     setVideoEnded(!gatedVideoStages.includes(stage));
   }, [stage]);
 
+  useEffect(() => {
+    if (stage !== "intake") return;
+
+    const root = document.documentElement;
+    const body = document.body;
+    const previousBodyOverflow = body.style.overflow;
+    const previousRootOverflow = root.style.overflow;
+
+    function syncViewport() {
+      const viewport = window.visualViewport;
+      const height = viewport?.height ?? window.innerHeight;
+      const offsetTop = viewport?.offsetTop ?? 0;
+      const keyboardOffset = Math.max(0, window.innerHeight - height - offsetTop);
+      root.style.setProperty("--app-viewport-height", `${height}px`);
+      root.style.setProperty("--keyboard-offset", `${keyboardOffset}px`);
+    }
+
+    syncViewport();
+    body.style.overflow = "hidden";
+    root.style.overflow = "hidden";
+    window.visualViewport?.addEventListener("resize", syncViewport);
+    window.visualViewport?.addEventListener("scroll", syncViewport);
+    window.addEventListener("resize", syncViewport);
+
+    return () => {
+      body.style.overflow = previousBodyOverflow;
+      root.style.overflow = previousRootOverflow;
+      root.style.removeProperty("--app-viewport-height");
+      root.style.removeProperty("--keyboard-offset");
+      window.visualViewport?.removeEventListener("resize", syncViewport);
+      window.visualViewport?.removeEventListener("scroll", syncViewport);
+      window.removeEventListener("resize", syncViewport);
+    };
+  }, [stage]);
+
   function resetFlow() {
     setStage("opening");
     setIntakeStep("name");
