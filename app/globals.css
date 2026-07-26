@@ -980,9 +980,9 @@ input:focus {
 
 .cover-page dl {
   position: absolute;
-  left: 50%;
+  left: 42%;
   top: 49%;
-  width: min(54vw, 290px);
+  width: min(50vw, 260px);
   display: grid;
   gap: 11px;
   margin: 0;
@@ -991,8 +991,8 @@ input:focus {
 
 .cover-page div {
   display: grid;
-  grid-template-columns: minmax(82px, 96px) minmax(0, 1fr);
-  gap: 10px;
+  grid-template-columns: minmax(76px, 90px) minmax(0, 1fr);
+  gap: 8px;
   text-align: left;
   align-items: baseline;
 }
@@ -1050,7 +1050,11 @@ input:focus {
 }
 
 .analysis-page span {
+  color: #b3312b;
   font-size: 21px;
+  text-shadow:
+    0 1px 0 rgba(255, 232, 178, 0.22),
+    0 0 14px rgba(124, 18, 14, 0.22);
 }
 
 .analysis-page p {
