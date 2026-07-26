@@ -253,11 +253,9 @@ function StageVideo({
 }
 
 function LoadingAnalysisVideo({ src, soundEnabled }: { src: string; soundEnabled: boolean }) {
-  function loopWatchSegment(event: SyntheticEvent<HTMLVideoElement>) {
+  function slowLoadingVideo(event: SyntheticEvent<HTMLVideoElement>) {
     const video = event.currentTarget;
-    const restartAt = video.duration ? Math.min(6.2, Math.max(0, video.duration - 0.8)) : 6.2;
-    video.currentTime = restartAt;
-    void video.play();
+    video.playbackRate = 0.78;
   }
 
   return (
@@ -266,9 +264,10 @@ function LoadingAnalysisVideo({ src, soundEnabled }: { src: string; soundEnabled
       src={src}
       autoPlay
       muted={!soundEnabled}
+      loop
       playsInline
       preload="auto"
-      onEnded={loopWatchSegment}
+      onLoadedMetadata={slowLoadingVideo}
     />
   );
 }
@@ -346,7 +345,7 @@ export default function Home() {
     const lineTimer = window.setInterval(() => {
       setLoadingLine((value) => (value + 1) % loadingText.length);
     }, 1800);
-    const readyTimer = window.setTimeout(() => setAnalysisReady(true), 15000);
+    const readyTimer = window.setTimeout(() => setAnalysisReady(true), 24000);
     return () => {
       window.clearInterval(lineTimer);
       window.clearTimeout(readyTimer);
@@ -855,7 +854,7 @@ export default function Home() {
               <p className="analysis-note">
                 {canRevealAnalysis
                   ? "懷錶已停在你的第一段路線。"
-                  : "懷錶會停在這裡循環等待，直到班次表完成校準。"}
+                  : "列車會反覆穿過隧道，直到班次表完成校準。"}
               </p>
               {notice && <p className="analysis-note subtle-note">{notice}</p>}
               {canRevealAnalysis && (
