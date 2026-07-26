@@ -62,6 +62,12 @@ button:disabled {
   justify-content: center;
 }
 
+.site-shell.intake-active {
+  height: 100dvh;
+  min-height: 100dvh;
+  overflow: hidden;
+}
+
 .phone-frame {
   position: relative;
   width: min(100vw, 480px);
@@ -119,6 +125,12 @@ button:disabled {
   min-height: 100vh;
   overflow: hidden;
   background: #070809;
+}
+
+.intake-scene {
+  height: 100dvh;
+  min-height: 100dvh;
+  overflow: hidden;
 }
 
 .stage-video {
@@ -188,12 +200,17 @@ button:disabled {
 }
 
 .scene-copy.form-panel {
-  min-height: 100vh;
+  position: fixed;
+  z-index: 25;
+  left: 50%;
+  bottom: max(8px, env(safe-area-inset-bottom));
+  width: min(100vw, 480px);
+  min-height: auto;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  padding-top: 92px;
-  padding-bottom: 8px;
+  padding: 0 18px;
+  transform: translateX(-50%);
 }
 
 .kicker,
@@ -403,6 +420,7 @@ input {
   outline: none;
   background: rgba(17, 21, 23, 0.82);
   color: var(--foreground);
+  font-size: 16px;
   padding: 0 14px;
 }
 

@@ -77,6 +77,19 @@ const stageOrder: Stage[] = [
 
 const formatPrice = (value: number) => `NT$${value.toLocaleString("zh-TW")}`;
 
+const formatDateInput = (value: string) => {
+  const digits = value.replace(/\D/g, "").slice(0, 8);
+  if (digits.length <= 4) return digits;
+  if (digits.length <= 6) return `${digits.slice(0, 4)}/${digits.slice(4)}`;
+  return `${digits.slice(0, 4)}/${digits.slice(4, 6)}/${digits.slice(6)}`;
+};
+
+const formatTimeInput = (value: string) => {
+  const digits = value.replace(/\D/g, "").slice(0, 4);
+  if (digits.length <= 2) return digits;
+  return `${digits.slice(0, 2)}:${digits.slice(2)}`;
+};
+
 function StageVideo({
   src,
   loop = true,
@@ -149,14 +162,14 @@ export default function Home() {
 
   const intakeReady =
     name.trim().length > 0 &&
-    birth.length >= 8 &&
-    (unknownTime || time.length >= 4) &&
+    birth.length >= 10 &&
+    (unknownTime || time.length >= 5) &&
     birthplace.trim().length > 0 &&
     concern.length > 0 &&
     isEmailValid;
 
   const loadingText = useMemo(
-    () => ["火車已進入隧道", "懷錶正在校準出發站", "GPT 正在分析你的路線", "正在整理第一段班次"],
+    () => ["火車已進入隧道", "懷錶正在校準出發站", "命運檔案正在展開", "正在調度第一段班次"],
     [],
   );
   const [loadingLine, setLoadingLine] = useState(0);
@@ -197,9 +210,9 @@ export default function Home() {
       case "name":
         return name.trim().length > 0;
       case "birth":
-        return birth.length >= 8;
+        return birth.length >= 10;
       case "time":
-        return unknownTime || time.length >= 4;
+        return unknownTime || time.length >= 5;
       case "birthplace":
         return birthplace.trim().length > 0;
       case "concern":
@@ -224,7 +237,7 @@ export default function Home() {
   }
 
   return (
-    <main className="site-shell">
+    <main className={stage === "intake" ? "site-shell intake-active" : "site-shell"}>
       <section className="phone-frame" aria-label="第 13 月台互動體驗">
         <div className="topbar">
           <button className="icon-button" onClick={resetFlow} aria-label="回到開場">
@@ -307,20 +320,19 @@ export default function Home() {
                       value={name}
                       onChange={(event) => setName(event.target.value)}
                       placeholder="你的名字或暱稱"
-                      autoFocus
                     />
                   </label>
                 )}
 
                 {intakeStep === "birth" && (
                   <label className="single-field">
-                    出生日期
+                      出生日期
                     <input
                       value={birth}
-                      onChange={(event) => setBirth(event.target.value)}
-                      placeholder="1996.08.21"
+                      onChange={(event) => setBirth(formatDateInput(event.target.value))}
+                      placeholder="1996/08/21"
                       inputMode="numeric"
-                      autoFocus
+                      maxLength={10}
                     />
                   </label>
                 )}
@@ -331,10 +343,11 @@ export default function Home() {
                       出生時間
                       <input
                         value={time}
-                        onChange={(event) => setTime(event.target.value)}
+                        onChange={(event) => setTime(formatTimeInput(event.target.value))}
                         placeholder="13:30"
                         disabled={unknownTime}
-                        autoFocus
+                        inputMode="numeric"
+                        maxLength={5}
                       />
                     </label>
                     <button
@@ -354,7 +367,6 @@ export default function Home() {
                       value={birthplace}
                       onChange={(event) => setBirthplace(event.target.value)}
                       placeholder="台北、台中、香港..."
-                      autoFocus
                     />
                   </label>
                 )}
@@ -385,7 +397,6 @@ export default function Home() {
                       onChange={(event) => setEmail(event.target.value)}
                       placeholder="example@mail.com"
                       type="email"
-                      autoFocus
                     />
                   </label>
                 )}
@@ -455,16 +466,16 @@ export default function Home() {
           <section className="scene loading-scene" aria-live="polite">
             <LoadingAnalysisVideo src={videos.loading} />
             <div className="scene-copy center">
-              <p className="kicker">等待分析結果</p>
+              <p className="kicker">命運檔案調度中</p>
               <h2>{loadingText[loadingLine]}</h2>
               <p className="analysis-note">
                 {analysisReady
-                  ? "分析完成，懷錶已停在你的第一段路線。"
-                  : "懷錶會停在這裡循環等待，直到 GPT 分析完成。"}
+                  ? "懷錶已停在你的第一段路線。"
+                  : "懷錶會停在這裡循環等待，直到班次表完成校準。"}
               </p>
               {analysisReady && (
                 <button className="primary-button analysis-button" onClick={() => setStage("reveal")}>
-                  查看分析結果
+                  翻開第一頁
                 </button>
               )}
             </div>
