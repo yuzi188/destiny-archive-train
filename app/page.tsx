@@ -559,7 +559,7 @@ export default function Home() {
               </div>
             </article>
             <article className="story-panel book-panel aligned-book" style={{ backgroundImage: "url('/comic/story/06-analysis-page.png')" }}>
-              <div className="archive-page page-overlay">
+              <div className="archive-page page-overlay analysis-page">
                 <span>第一章｜我看到的你</span>
                 <p>你總是走在最前面。</p>
                 <p>不是因為你喜歡領導。</p>
@@ -568,7 +568,7 @@ export default function Home() {
               </div>
             </article>
             <article className="story-panel book-panel aligned-book" style={{ backgroundImage: "url('/comic/story/06-analysis-page.png')" }}>
-              <div className="archive-page page-overlay">
+              <div className="archive-page page-overlay analysis-page">
                 <span>第二章｜真正的你</span>
                 <p>外表冷靜。</p>
                 <p>內心敏感。</p>
@@ -576,7 +576,7 @@ export default function Home() {
               </div>
             </article>
             <article className="story-panel book-panel aligned-book" style={{ backgroundImage: "url('/comic/story/06-analysis-page.png')" }}>
-              <div className="archive-page page-overlay">
+              <div className="archive-page page-overlay analysis-page">
                 <span>第三章｜一直重複的人生</span>
                 <p>工作。你總是承擔。</p>
                 <p>感情。你總是等待。</p>

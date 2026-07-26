@@ -661,11 +661,11 @@ input:focus {
 }
 
 .archive-page.cover-page {
-  width: min(58vw, 276px);
-  margin: -3vh auto 0;
+  width: min(56vw, 268px);
+  margin: -1.5vh auto 0;
   text-align: center;
-  transform: perspective(820px) rotateX(3deg) rotateZ(-3.2deg) skewX(-2deg);
-  transform-origin: center center;
+  transform: perspective(900px) rotateX(2deg) rotateZ(-0.7deg);
+  transform-origin: 50% 42%;
 }
 
 .cover-page i {
@@ -678,15 +678,16 @@ input:focus {
 
 .cover-page dl {
   display: grid;
-  gap: 8px;
+  gap: 9px;
   margin: 0;
 }
 
 .cover-page div {
   display: grid;
-  grid-template-columns: 92px 1fr;
-  gap: 10px;
+  grid-template-columns: 104px minmax(0, 1fr);
+  gap: 12px;
   text-align: left;
+  align-items: baseline;
 }
 
 .cover-page dt {
@@ -714,6 +715,33 @@ input:focus {
 .page-overlay {
   width: min(64vw, 300px);
   margin: 16vh auto 0;
+}
+
+.analysis-page {
+  align-self: stretch;
+  width: min(74vw, 350px);
+  margin: 2vh auto 0;
+  padding-left: clamp(10px, 2vw, 16px);
+  transform: translateY(-2vh) perspective(900px) rotateX(1.2deg) rotateZ(-0.35deg);
+  transform-origin: 50% 20%;
+}
+
+.analysis-page span {
+  margin: 0 0 21px;
+  font-size: 14px;
+  line-height: 1.2;
+}
+
+.analysis-page p {
+  margin-bottom: 14px;
+  font-size: 18px;
+  line-height: 1.5;
+}
+
+.analysis-page strong {
+  margin-top: 18px;
+  font-size: 18px;
+  line-height: 1.45;
 }
 
 .lower-page {
