@@ -168,25 +168,25 @@ const fallbackDestinyPreview: DestinyPreview = {
   chapters: {
     seen: {
       title: "第一章｜我看到的你",
-      lines: ["你會先接住壓力。", "因為你不習慣等別人救場。"],
+      lines: ["八字看見你先承擔。", "星盤看見你怕失控。", "白話：你常先扛再說累。"],
       headline: "第一特徵：先行者",
     },
     inner: {
       title: "第二章｜真正的你",
-      lines: ["你表面很穩。", "但在乎的人一靠近。", "你反而更怕說錯。"],
+      lines: ["月亮顯示你內心敏感。", "在乎時反而更沉默。", "白話：越重視越不敢吵。"],
     },
     repeat: {
       title: "第三章｜一直重複的人生",
-      lines: ["工作裡你先扛責任。", "關係裡你先觀察反應。", "最後常把自己延後。"],
+      lines: ["責任宮位反覆被觸動。", "你常把自己排到後面。", "白話：你太會替人收尾。"],
     },
     blindSpot: {
       title: "第五章｜你的盲點",
       headline: "你最大的敵人不是失敗",
-      lines: ["是你太快替別人收尾。", "也太慢替自己開口。"],
+      lines: ["十神顯示你怕麻煩別人。", "問題卡在求援那一刻。", "白話：你需要練習開口。"],
     },
     future: {
       title: "第六章｜如果不改",
-      lines: ["同一種選擇會重演。", "關係會先變得沉默。"],
+      lines: ["流年會重播同一選擇。", "關係會先變得沉默。", "白話：不說破就會卡住。"],
       headline: "機會會停在門外",
     },
   },
@@ -194,7 +194,7 @@ const fallbackDestinyPreview: DestinyPreview = {
     title: "第四章｜你的命格",
     destinyType: "開路者",
     triangulation: ["八字指向先承擔再求援。", "星盤指向需要被看見。", "問題卡在同一個選擇口。"],
-    lines: ["三條線交會。", "所以你是開路者。"],
+    lines: ["三條線交會成同一命格。", "白話：你要先替自己開路。"],
   },
   locked: {
     title: "後續章節已鎖住",
@@ -947,7 +947,6 @@ export default function Home() {
                     <dd>{birthplace || "尚未填寫"}</dd>
                   </div>
                 </dl>
-                <p>{destinyPreview.recordStatus}</p>
               </div>
             </article>
             <article className="story-panel book-panel aligned-book" style={{ backgroundImage: "url('/comic/story/06-analysis-page.png')" }}>
