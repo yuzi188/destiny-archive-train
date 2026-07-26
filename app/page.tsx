@@ -170,6 +170,7 @@ function StageVideo({
   onEnded,
   soundEnabled,
   shouldPlay = true,
+  poster,
 }: {
   src: string;
   loop?: boolean;
@@ -177,11 +178,13 @@ function StageVideo({
   onEnded?: () => void;
   soundEnabled: boolean;
   shouldPlay?: boolean;
+  poster?: string;
 }) {
   return (
     <video
       className={`stage-video ${dim}`}
       src={src}
+      poster={poster}
       autoPlay={shouldPlay}
       muted={!soundEnabled}
       loop={loop}
@@ -403,11 +406,13 @@ export default function Home() {
 
         {stage === "opening" && (
           <section className="scene scene-hero">
+            {!journeyStarted && <div className="opening-poster" aria-hidden="true" />}
             <StageVideo
               src={videos.opening}
               loop={false}
               soundEnabled={soundEnabled}
               shouldPlay={journeyStarted}
+              poster="/opening-poster.jpg"
               onEnded={finishOpeningVideo}
             />
             {!journeyStarted && (
