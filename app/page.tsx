@@ -108,6 +108,7 @@ const products: Record<ProductId, Product> = {
 };
 
 const productEntries = Object.entries(products) as Array<[ProductId, Product]>;
+const reportRecipientEmail = "q0983120788@gmail.com";
 const stageOrder: Stage[] = [
   "opening",
   "enter",
@@ -313,6 +314,7 @@ export default function Home() {
   const [terms, setTerms] = useState(false);
   const [marketing, setMarketing] = useState(false);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
+  const [claimStatus, setClaimStatus] = useState<"idle" | "sending" | "sent" | "pending" | "error">("idle");
   const [notice, setNotice] = useState("");
   const [videoEnded, setVideoEnded] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(false);
@@ -505,6 +507,41 @@ export default function Home() {
         setNatalChart(fallbackNatalChart);
       })
       .finally(() => setAnalysisFinished(true));
+  }
+
+  async function claimFullReport() {
+    setClaimStatus("sending");
+    setNotice("");
+
+    try {
+      const response = await fetch("/api/claim", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          recipientEmail: reportRecipientEmail,
+          passenger: {
+            name,
+            birth,
+            time,
+            unknownTime,
+            birthplace,
+            concern,
+            email,
+            marketing,
+          },
+          preview: destinyPreview,
+          chartDisplay: natalChart,
+        }),
+      });
+      const data = (await response.json()) as { sent?: boolean; message?: string };
+      if (!response.ok) throw new Error(data.message || "report delivery failed");
+
+      setClaimStatus(data.sent ? "sent" : "pending");
+      setNotice(data.message || "完整報告已送出。");
+    } catch {
+      setClaimStatus("error");
+      setNotice("報告已建立，但寄送暫時沒有成功。請稍後再試。");
+    }
   }
 
   function isCurrentStepReady() {
@@ -1012,9 +1049,9 @@ export default function Home() {
             <StageVideo src={videos.payTeaser} loop={false} soundEnabled={soundEnabled} onEnded={() => setVideoEnded(true)} />
             {isVideoGateReady && (
               <div className="scene-copy bottom delayed-copy">
-                <p className="line">免費路線到這裡。後面的班次，要不要繼續查？</p>
+                <p className="line">免費路線到這裡。完整檔案已經封好，等你領取。</p>
                 <button className="primary-button" onClick={() => setCheckoutOpen(true)}>
-                  解鎖完整班次表
+                  領取完整報告
                 </button>
               </div>
             )}
@@ -1032,42 +1069,17 @@ export default function Home() {
             >
               <button
                 className="modal-close"
-                aria-label="關閉付款選擇"
+                aria-label="關閉領取視窗"
                 onClick={() => setCheckoutOpen(false)}
               >
                 ×
               </button>
-              <h2 id="checkout-title">完整班次表方案</h2>
-              <p id="checkout-desc">這是原型付款彈窗，按鈕不會真的收款。</p>
-              <div className="product-list">
-                {productEntries.map(([id, product]) => (
-                  <button
-                    key={id}
-                    className={selectedProduct === id ? "product active" : "product"}
-                    onClick={() => setSelectedProduct(id)}
-                    type="button"
-                  >
-                    <span>{product.tag}</span>
-                    <strong>{product.name}</strong>
-                    <small>{product.bullets.join(" / ")}</small>
-                    <em>
-                      <s>{formatPrice(product.oldPrice)}</s>
-                      {formatPrice(product.price)}
-                    </em>
-                  </button>
-                ))}
-              </div>
-              <div className="receipt">
-                <span>商品原價</span>
-                <strong>{formatPrice(selected.oldPrice)}</strong>
-                <span>限時折抵</span>
-                <strong>-{formatPrice(selected.oldPrice - selected.price)}</strong>
-                <button type="button" onClick={() => setCoupon((value) => !value)}>
-                  {coupon ? "已套用月台券" : "套用月台券"}
-                </button>
-                <strong>{coupon ? `-${formatPrice(couponValue)}` : "未套用"}</strong>
-                <span>本次合計</span>
-                <strong>{formatPrice(total)}</strong>
+              <h2 id="checkout-title">領取完整報告</h2>
+              <p id="checkout-desc">不需要付款。完整命運檔案會寄到你的信箱。</p>
+              <div className="claim-card">
+                <span>寄送信箱</span>
+                <strong>{reportRecipientEmail}</strong>
+                <p>內容包含完整班次表、命格三叉分析、星盤與八字摘要、後續章節解讀。</p>
               </div>
               <label className="check-row">
                 <input
@@ -1095,10 +1107,10 @@ export default function Home() {
               </label>
               <button
                 className="pay-button"
-                disabled={!privacy || !terms}
-                onClick={() => setNotice("原型完成：這裡之後可串接金流或會員系統。")}
+                disabled={!privacy || !terms || claimStatus === "sending"}
+                onClick={claimFullReport}
               >
-                前往解鎖
+                {claimStatus === "sending" ? "寄送中..." : "領取完整報告"}
               </button>
               {notice && <p className="notice">{notice}</p>}
             </section>

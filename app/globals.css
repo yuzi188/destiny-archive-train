@@ -1270,6 +1270,37 @@ input:focus {
   font-weight: 500;
 }
 
+.claim-card {
+  display: grid;
+  gap: 8px;
+  margin: 18px 0;
+  padding: 16px;
+  border: 1px solid rgba(216, 179, 109, 0.28);
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, rgba(216, 179, 109, 0.12), transparent 46%),
+    rgba(7, 8, 9, 0.62);
+}
+
+.claim-card span {
+  color: var(--gold);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.claim-card strong {
+  color: var(--foreground);
+  font-size: 18px;
+  overflow-wrap: anywhere;
+}
+
+.claim-card p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
 .receipt {
   display: grid;
   grid-template-columns: 1fr auto;
