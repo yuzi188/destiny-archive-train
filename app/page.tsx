@@ -254,8 +254,16 @@ function StageVideo({
 
 function LoadingAnalysisVideo({ src, soundEnabled }: { src: string; soundEnabled: boolean }) {
   function slowLoadingVideo(event: SyntheticEvent<HTMLVideoElement>) {
+    event.currentTarget.playbackRate = 0.72;
+  }
+
+  function keepWatchLoop(event: SyntheticEvent<HTMLVideoElement>) {
     const video = event.currentTarget;
-    video.playbackRate = 0.78;
+    const watchLoopStart = Math.min(8, Math.max(0, video.duration - 1.2));
+    if (video.duration && video.currentTime >= video.duration - 0.15) {
+      video.currentTime = watchLoopStart;
+      void video.play();
+    }
   }
 
   return (
@@ -264,10 +272,10 @@ function LoadingAnalysisVideo({ src, soundEnabled }: { src: string; soundEnabled
       src={src}
       autoPlay
       muted={!soundEnabled}
-      loop
       playsInline
       preload="auto"
       onLoadedMetadata={slowLoadingVideo}
+      onTimeUpdate={keepWatchLoop}
     />
   );
 }
@@ -345,7 +353,7 @@ export default function Home() {
     const lineTimer = window.setInterval(() => {
       setLoadingLine((value) => (value + 1) % loadingText.length);
     }, 1800);
-    const readyTimer = window.setTimeout(() => setAnalysisReady(true), 24000);
+    const readyTimer = window.setTimeout(() => setAnalysisReady(true), 26000);
     return () => {
       window.clearInterval(lineTimer);
       window.clearTimeout(readyTimer);
