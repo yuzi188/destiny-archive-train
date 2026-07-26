@@ -365,6 +365,25 @@ export default function Home() {
   }, [stage]);
 
   useEffect(() => {
+    if (stage !== "free") return;
+
+    const targets = Array.from(document.querySelectorAll<HTMLElement>(".story-copy, .archive-page"));
+    targets.forEach((target) => target.classList.remove("is-writing"));
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          entry.target.classList.toggle("is-writing", entry.isIntersecting);
+        });
+      },
+      { root: null, threshold: 0.38 },
+    );
+
+    targets.forEach((target) => observer.observe(target));
+    return () => observer.disconnect();
+  }, [stage, destinyPreview]);
+
+  useEffect(() => {
     if (stage !== "intake") return;
 
     const root = document.documentElement;
