@@ -802,14 +802,35 @@ input:focus {
 }
 
 .report-page {
-  margin: 13vh auto 0;
+  width: min(72vw, 340px);
+  margin: 20vh auto 0;
+  transform: translateX(1vw);
+}
+
+.report-page span,
+.split-page span {
+  margin-bottom: 24px;
+  color: #b53232;
+  font-size: 20px;
+  line-height: 1.25;
+  letter-spacing: 0;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+
+.report-page strong {
+  margin-bottom: 12px;
+  font-size: 22px;
+  line-height: 1.35;
 }
 
 .report-page p {
   display: grid;
-  grid-template-columns: 64px 1fr;
+  grid-template-columns: 76px 1fr;
   align-items: center;
   gap: 12px;
+  margin-bottom: 15px;
+  font-size: 20px;
+  line-height: 1.35;
 }
 
 .report-page b {
@@ -820,7 +841,23 @@ input:focus {
 }
 
 .split-page {
-  margin: 34vh auto 0;
+  width: min(70vw, 330px);
+  margin: 22vh auto 0;
+  text-align: center;
+  transform: translateX(-1vw) perspective(900px) rotateX(1.2deg) rotateZ(-2deg);
+  transform-origin: 50% 30%;
+}
+
+.split-page p {
+  margin-bottom: 16px;
+  font-size: 19px;
+  line-height: 1.48;
+}
+
+.split-page strong {
+  margin-top: 18px;
+  font-size: 20px;
+  line-height: 1.45;
 }
 
 .locked-page {
