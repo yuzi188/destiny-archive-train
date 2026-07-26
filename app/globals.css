@@ -766,6 +766,11 @@ input:focus {
   border-bottom: 1px solid rgba(247, 239, 228, 0.12);
 }
 
+.book-panel {
+  justify-content: flex-start;
+  background-position: center top;
+}
+
 .story-panel::before {
   content: "";
   position: absolute;
@@ -915,7 +920,7 @@ input:focus {
 .archive-page em,
 .cover-page dd,
 .cover-page p {
-  color: rgba(17, 12, 8, 0.74);
+  color: rgba(17, 12, 8, 0.88);
   font-family: var(--archive-hand-font);
   font-weight: 400;
   letter-spacing: 0;
@@ -926,6 +931,7 @@ input:focus {
   font-size: 13px;
   line-height: 1.7;
   text-align: center;
+  text-shadow: 0 1px 0 rgba(255, 248, 225, 0.2), 0 0 1px rgba(0, 0, 0, 0.22);
 }
 
 .archive-page strong {
@@ -938,17 +944,17 @@ input:focus {
 .archive-page.cover-page {
   position: absolute;
   left: 50%;
-  top: 31%;
-  width: min(57vw, 272px);
+  top: 40.5%;
+  width: min(54vw, 258px);
   margin: 0;
   text-align: center;
-  transform: translateX(-50%) perspective(900px) rotateX(2deg) rotateZ(-0.35deg);
+  transform: translateX(-50%) translateY(-50%) perspective(900px) rotateX(2deg) rotateZ(-0.35deg);
   transform-origin: 50% 42%;
 }
 
 .cover-page span {
-  margin-bottom: 13px;
-  font-size: 22px;
+  margin-bottom: 12px;
+  font-size: 21px;
 }
 
 .cover-page i {
@@ -984,14 +990,14 @@ input:focus {
 
 .cover-page dd {
   margin: 0;
-  font-size: 14px;
+  font-size: 13px;
   line-height: 1.32;
   overflow-wrap: anywhere;
 }
 
 .cover-page p {
   margin-top: 10px;
-  font-size: 13px;
+  font-size: 12px;
   line-height: 1.42;
 }
 
@@ -1003,31 +1009,29 @@ input:focus {
   background-position: center;
 }
 
-.page-overlay {
-  width: min(64vw, 300px);
-  margin: 16vh auto 0;
-}
-
 .analysis-page {
-  align-self: center;
-  width: min(54vw, 258px);
-  margin: 10vh auto 0;
+  position: absolute;
+  left: 50%;
+  top: 53.5%;
+  width: min(58vw, 276px);
+  margin: 0;
   padding: 0;
   text-align: center;
-  transform: translateY(-2vh) perspective(900px) rotateX(1.2deg) rotateZ(-0.35deg);
-  transform-origin: 50% 20%;
+  transform: translateX(-50%) translateY(-50%) perspective(900px) rotateX(1.2deg) rotateZ(-0.35deg);
+  transform-origin: 50% 50%;
 }
 
 .analysis-page span {
-  font-size: 24px;
+  margin-bottom: 18px;
+  font-size: 23px;
 }
 
 .analysis-page p {
-  font-size: 13px;
+  font-size: 12px;
 }
 
 .analysis-page strong {
-  font-size: 14px;
+  font-size: 13px;
 }
 
 .lower-page {
@@ -1037,10 +1041,13 @@ input:focus {
 }
 
 .report-page {
-  width: min(54vw, 258px);
-  margin: 22vh auto 0;
+  position: absolute;
+  left: 50%;
+  top: 53.5%;
+  width: min(58vw, 276px);
+  margin: 0;
   text-align: center;
-  transform: translateX(1vw);
+  transform: translateX(-50%) translateY(-50%) perspective(900px) rotateX(1.2deg) rotateZ(-0.35deg);
 }
 
 .report-page span,
@@ -1072,10 +1079,13 @@ input:focus {
 }
 
 .split-page {
-  width: min(54vw, 258px);
-  margin: 30vh auto 0;
+  position: absolute;
+  left: 50%;
+  top: 58%;
+  width: min(58vw, 276px);
+  margin: 0;
   text-align: center;
-  transform: translateX(-1vw) perspective(900px) rotateX(1.2deg) rotateZ(-2deg);
+  transform: translateX(-50%) translateY(-50%) perspective(900px) rotateX(1.2deg) rotateZ(-2deg);
   transform-origin: 50% 30%;
 }
 
@@ -1092,32 +1102,32 @@ input:focus {
 .locked-page {
   position: absolute;
   left: 50%;
-  top: 42%;
-  width: min(66vw, 318px);
+  top: 52%;
+  width: min(58vw, 278px);
   margin: 0;
   background: transparent;
   color: #f7efe4;
   text-align: center;
-  transform: translateX(-50%) perspective(900px) rotateX(1deg) rotateZ(-1.8deg);
+  transform: translateX(-50%) translateY(-50%) perspective(900px) rotateX(1deg) rotateZ(-1.8deg);
   transform-origin: 50% 35%;
   text-shadow: 0 2px 14px rgba(0, 0, 0, 0.86), 0 0 28px rgba(0, 0, 0, 0.62);
 }
 
 .locked-page span {
   color: #d8b36d;
-  margin-bottom: 20px;
-  font-size: 19px;
+  margin-bottom: 18px;
+  font-size: 20px;
 }
 
 .locked-page p {
   color: rgba(247, 239, 228, 0.86);
   display: grid;
-  grid-template-columns: 0.86fr 1fr 0.82fr;
-  gap: 7px;
+  grid-template-columns: 0.82fr 0.92fr 0.62fr;
+  gap: 4px;
   min-height: 54px;
-  margin: 0 0 10px;
+  margin: 0 0 8px;
   align-items: center;
-  font-size: 14px;
+  font-size: 12px;
   line-height: 1.32;
 }
 
