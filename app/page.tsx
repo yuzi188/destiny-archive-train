@@ -354,6 +354,45 @@ export default function Home() {
     setVideoEnded(false);
   }
 
+  function goBack() {
+    setCheckoutOpen(false);
+
+    if (stage === "opening") {
+      resetFlow();
+      return;
+    }
+
+    if (stage === "intake" && stepIndex > 0) {
+      previousIntakeStep();
+      return;
+    }
+
+    const previousStages: Partial<Record<Stage, Stage>> = {
+      enter: "opening",
+      dialogue: "enter",
+      intake: "dialogue",
+      loading: "intake",
+      reveal: "loading",
+      teaser: "reveal",
+      free: "teaser",
+      payTeaser: "free",
+    };
+    const previousStage = previousStages[stage];
+
+    if (!previousStage) {
+      resetFlow();
+      return;
+    }
+
+    if (previousStage === "opening") {
+      setJourneyStarted(false);
+      setSoundEnabled(false);
+    }
+
+    setVideoEnded(!gatedVideoStages.includes(previousStage));
+    setStage(previousStage);
+  }
+
   function openIntake() {
     setIntakeStep("name");
     setVideoEnded(true);
@@ -449,7 +488,7 @@ export default function Home() {
     <main className={stage === "intake" ? "site-shell intake-active" : "site-shell"}>
       <section className="phone-frame" aria-label="第 13 月台互動體驗">
         <div className="topbar">
-          <button className="icon-button" onClick={resetFlow} aria-label="回到開場">
+          <button className="icon-button" onClick={goBack} aria-label="上一段">
             ‹
           </button>
           <div className="progress-track" aria-label={`流程進度 ${progress}%`}>
