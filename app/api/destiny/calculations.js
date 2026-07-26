@@ -187,7 +187,7 @@ function countElements(pillars) {
 
 function calculateAstrology(utcDate, location, timeApproximate) {
   const planets = PLANETS.map(([name, body]) => {
-    const longitude = body === "Sun" ? Astronomy.SunPosition(utcDate).elon : Astronomy.EclipticLongitude(body, utcDate);
+    const longitude = calculateTropicalLongitude(body, utcDate);
     return {
       key: planetKey(body),
       name,
@@ -206,12 +206,20 @@ function calculateAstrology(utcDate, location, timeApproximate) {
   };
 }
 
+function calculateTropicalLongitude(body, utcDate) {
+  if (body === "Sun") return normalizeDegrees(Astronomy.SunPosition(utcDate).elon);
+  if (body === Astronomy.Body.Moon) return normalizeDegrees(Astronomy.EclipticGeoMoon(utcDate).lon);
+
+  const geocentricVector = Astronomy.GeoVector(body, utcDate, true);
+  const eclipticVector = Astronomy.RotateVector(Astronomy.Rotation_EQJ_ECL(), geocentricVector);
+  const sphere = Astronomy.SphereFromVector(eclipticVector);
+  return normalizeDegrees(sphere.lon);
+}
+
 function calculateAscendant(date, location) {
-  const lst = Astronomy.SiderealTime(date) * 15 + location.longitude;
-  const theta = deg2rad(normalizeDegrees(lst));
-  const phi = deg2rad(location.latitude);
-  const epsilon = deg2rad(23.4392911);
-  const longitude = normalizeDegrees(rad2deg(Math.atan2(-Math.cos(theta), Math.sin(epsilon) * Math.tan(phi) + Math.cos(epsilon) * Math.sin(theta))));
+  const observer = new Astronomy.Observer(location.latitude, location.longitude, 0);
+  const rotation = Astronomy.Rotation_ECL_HOR(date, observer);
+  const longitude = findEasternHorizonEclipticLongitude(date, rotation);
   return {
     key: "ascendant",
     symbol: "ASC",
@@ -219,6 +227,52 @@ function calculateAscendant(date, location) {
     sign: zodiacSign(longitude),
     degreeInSign: round(longitude % 30),
   };
+}
+
+function findEasternHorizonEclipticLongitude(date, rotation) {
+  let previousLongitude = 0;
+  let previous = eclipticHorizonVector(previousLongitude, date, rotation);
+
+  for (let longitude = 1; longitude <= 360; longitude += 1) {
+    const current = eclipticHorizonVector(longitude, date, rotation);
+    const crossesHorizon = previous.z === 0 || current.z === 0 || previous.z * current.z < 0;
+    const easternSide = (previous.y + current.y) / 2 < 0;
+
+    if (crossesHorizon && easternSide) {
+      return refineHorizonCrossing(previousLongitude, longitude, date, rotation);
+    }
+
+    previousLongitude = longitude;
+    previous = current;
+  }
+
+  return normalizeDegrees(previousLongitude);
+}
+
+function refineHorizonCrossing(low, high, date, rotation) {
+  let left = low;
+  let right = high;
+  let leftVector = eclipticHorizonVector(left, date, rotation);
+
+  for (let index = 0; index < 24; index += 1) {
+    const middle = (left + right) / 2;
+    const middleVector = eclipticHorizonVector(middle, date, rotation);
+
+    if (leftVector.z * middleVector.z <= 0) {
+      right = middle;
+    } else {
+      left = middle;
+      leftVector = middleVector;
+    }
+  }
+
+  return normalizeDegrees((left + right) / 2);
+}
+
+function eclipticHorizonVector(longitude, date, rotation) {
+  const sphere = new Astronomy.Spherical(0, normalizeDegrees(longitude), 1);
+  const eclipticVector = Astronomy.VectorFromSphere(sphere, date);
+  return Astronomy.RotateVector(rotation, eclipticVector);
 }
 
 function buildNatalChartDisplay(planets, ascendant) {
