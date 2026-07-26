@@ -356,6 +356,7 @@ export default function Home() {
   function buildClaimPayload() {
     return {
       recipientEmail: reportRecipientEmail,
+      productId: selectedProduct,
       passenger: {
         name,
         birth,
