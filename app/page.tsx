@@ -208,14 +208,14 @@ const fallbackNatalChart: NatalChartDisplay = {
   title: "出生星盤預覽",
   summary: ["太陽 獅子", "月亮 摩羯", "上升 雙子"],
   points: [
-    { key: "sun", symbol: "☉", sign: "獅子", degreeInSign: 5, x: 42, y: 43 },
-    { key: "moon", symbol: "☽", sign: "摩羯", degreeInSign: 18, x: 28, y: 58 },
-    { key: "ascendant", symbol: "ASC", sign: "雙子", degreeInSign: 12, x: 68, y: 51 },
-    { key: "mercury", symbol: "☿", sign: "巨蟹", degreeInSign: 21, x: 61, y: 45 },
-    { key: "venus", symbol: "♀", sign: "處女", degreeInSign: 9, x: 55, y: 67 },
-    { key: "mars", symbol: "♂", sign: "天蠍", degreeInSign: 14, x: 36, y: 68 },
-    { key: "jupiter", symbol: "♃", sign: "水瓶", degreeInSign: 3, x: 24, y: 49 },
-    { key: "saturn", symbol: "♄", sign: "牡羊", degreeInSign: 27, x: 51, y: 36 },
+    { key: "sun", symbol: "☉", sign: "獅子", degreeInSign: 5, x: 42, y: 41 },
+    { key: "moon", symbol: "☽", sign: "摩羯", degreeInSign: 18, x: 29, y: 53 },
+    { key: "ascendant", symbol: "ASC", sign: "雙子", degreeInSign: 12, x: 68, y: 48 },
+    { key: "mercury", symbol: "☿", sign: "巨蟹", degreeInSign: 21, x: 61, y: 43 },
+    { key: "venus", symbol: "♀", sign: "處女", degreeInSign: 9, x: 55, y: 61 },
+    { key: "mars", symbol: "♂", sign: "天蠍", degreeInSign: 14, x: 36, y: 62 },
+    { key: "jupiter", symbol: "♃", sign: "水瓶", degreeInSign: 3, x: 25, y: 47 },
+    { key: "saturn", symbol: "♄", sign: "牡羊", degreeInSign: 27, x: 51, y: 35 },
   ],
 };
 

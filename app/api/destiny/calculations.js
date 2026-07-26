@@ -246,7 +246,7 @@ function buildNatalChartDisplay(planets, ascendant) {
     summary: [sun && `太陽 ${sun.sign}`, moon && `月亮 ${moon.sign}`, ascendant && `上升 ${ascendant.sign}`].filter(Boolean),
     wheel: {
       centerX: 50,
-      centerY: 56,
+      centerY: 51,
       radiusX: 35,
       radiusY: 22,
     },
@@ -258,7 +258,7 @@ function chartPosition(longitude, radius) {
   const angle = deg2rad(normalizeDegrees(longitude) - 90);
   return {
     x: round(50 + Math.cos(angle) * radius),
-    y: round(56 + Math.sin(angle) * radius * 0.63),
+    y: round(51 + Math.sin(angle) * radius * 0.58),
   };
 }
 
