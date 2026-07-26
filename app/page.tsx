@@ -121,6 +121,32 @@ const formatTimeInput = (value: string) => {
   return `${digits.slice(0, 2)}:${digits.slice(2)}`;
 };
 
+const getDateDigits = (value: string) => value.replace(/\D/g, "").slice(0, 8);
+
+const isValidBirthDate = (value: string) => {
+  const digits = getDateDigits(value);
+  if (digits.length !== 8) return false;
+  const year = Number(digits.slice(0, 4));
+  const month = Number(digits.slice(4, 6));
+  const day = Number(digits.slice(6, 8));
+  const date = new Date(year, month - 1, day);
+  return (
+    year >= 1900 &&
+    year <= 2099 &&
+    date.getFullYear() === year &&
+    date.getMonth() === month - 1 &&
+    date.getDate() === day
+  );
+};
+
+const isValidBirthTime = (value: string) => {
+  const digits = value.replace(/\D/g, "").slice(0, 4);
+  if (digits.length !== 4) return false;
+  const hour = Number(digits.slice(0, 2));
+  const minute = Number(digits.slice(2, 4));
+  return hour >= 0 && hour <= 23 && minute >= 0 && minute <= 59;
+};
+
 const fallbackDestinyPreview: DestinyPreview = {
   recordStatus: "已建立命運檔案",
   chapters: {
@@ -250,8 +276,8 @@ export default function Home() {
 
   const intakeReady =
     name.trim().length > 0 &&
-    birth.length >= 10 &&
-    (unknownTime || time.length >= 5) &&
+    isValidBirthDate(birth) &&
+    (unknownTime || isValidBirthTime(time)) &&
     birthplace.trim().length > 0 &&
     concern.length > 0 &&
     isEmailValid;
@@ -370,9 +396,9 @@ export default function Home() {
       case "name":
         return name.trim().length > 0;
       case "birth":
-        return birth.length >= 10;
+        return isValidBirthDate(birth);
       case "time":
-        return unknownTime || time.length >= 5;
+        return unknownTime || isValidBirthTime(time);
       case "birthplace":
         return birthplace.trim().length > 0;
       case "concern":
