@@ -189,7 +189,9 @@ function calculateAstrology(utcDate, location, timeApproximate) {
   const planets = PLANETS.map(([name, body]) => {
     const longitude = body === "Sun" ? Astronomy.SunPosition(utcDate).elon : Astronomy.EclipticLongitude(body, utcDate);
     return {
+      key: planetKey(body),
       name,
+      symbol: planetSymbol(body),
       longitude: round(longitude),
       sign: zodiacSign(longitude),
       degreeInSign: round(((longitude % 30) + 30) % 30),
@@ -200,6 +202,7 @@ function calculateAstrology(utcDate, location, timeApproximate) {
     calculatedAtUtc: utcDate.toISOString(),
     planets,
     ascendant: timeApproximate ? null : calculateAscendant(utcDate, location),
+    display: buildNatalChartDisplay(planets, timeApproximate ? null : calculateAscendant(utcDate, location)),
   };
 }
 
@@ -210,10 +213,84 @@ function calculateAscendant(date, location) {
   const epsilon = deg2rad(23.4392911);
   const longitude = normalizeDegrees(rad2deg(Math.atan2(-Math.cos(theta), Math.sin(epsilon) * Math.tan(phi) + Math.cos(epsilon) * Math.sin(theta))));
   return {
+    key: "ascendant",
+    symbol: "ASC",
     longitude: round(longitude),
     sign: zodiacSign(longitude),
     degreeInSign: round(longitude % 30),
   };
+}
+
+function buildNatalChartDisplay(planets, ascendant) {
+  const visiblePlanets = planets.filter((planet) =>
+    ["sun", "moon", "mercury", "venus", "mars", "jupiter", "saturn"].includes(planet.key),
+  );
+  const points = visiblePlanets.map((planet, index) => ({
+    ...planet,
+    ...chartPosition(planet.longitude, 32 - index * 1.7),
+  }));
+
+  if (ascendant) {
+    points.push({
+      ...ascendant,
+      name: "ASC",
+      ...chartPosition(ascendant.longitude, 18),
+    });
+  }
+
+  const sun = planets.find((planet) => planet.key === "sun");
+  const moon = planets.find((planet) => planet.key === "moon");
+
+  return {
+    title: "出生星盤預覽",
+    summary: [sun && `太陽 ${sun.sign}`, moon && `月亮 ${moon.sign}`, ascendant && `上升 ${ascendant.sign}`].filter(Boolean),
+    wheel: {
+      centerX: 50,
+      centerY: 56,
+      radiusX: 35,
+      radiusY: 22,
+    },
+    points,
+  };
+}
+
+function chartPosition(longitude, radius) {
+  const angle = deg2rad(normalizeDegrees(longitude) - 90);
+  return {
+    x: round(50 + Math.cos(angle) * radius),
+    y: round(56 + Math.sin(angle) * radius * 0.63),
+  };
+}
+
+function planetKey(body) {
+  if (body === "Sun") return "sun";
+  const text = String(body).toLowerCase();
+  if (text.includes("moon")) return "moon";
+  if (text.includes("mercury")) return "mercury";
+  if (text.includes("venus")) return "venus";
+  if (text.includes("mars")) return "mars";
+  if (text.includes("jupiter")) return "jupiter";
+  if (text.includes("saturn")) return "saturn";
+  if (text.includes("uranus")) return "uranus";
+  if (text.includes("neptune")) return "neptune";
+  if (text.includes("pluto")) return "pluto";
+  return text;
+}
+
+function planetSymbol(body) {
+  const symbols = {
+    sun: "☉",
+    moon: "☽",
+    mercury: "☿",
+    venus: "♀",
+    mars: "♂",
+    jupiter: "♃",
+    saturn: "♄",
+    uranus: "♅",
+    neptune: "♆",
+    pluto: "♇",
+  };
+  return symbols[planetKey(body)] || "•";
 }
 
 function zodiacSign(longitude) {

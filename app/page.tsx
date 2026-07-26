@@ -54,6 +54,21 @@ type DestinyPreview = {
   };
 };
 
+type NatalChartPoint = {
+  key: string;
+  symbol: string;
+  sign: string;
+  degreeInSign: number;
+  x: number;
+  y: number;
+};
+
+type NatalChartDisplay = {
+  title: string;
+  summary: string[];
+  points: NatalChartPoint[];
+};
+
 const videos = {
   opening: "/videos/01-opening.mp4",
   enter: "/videos/02-enter-carriage.mp4",
@@ -189,6 +204,21 @@ const fallbackDestinyPreview: DestinyPreview = {
   },
 };
 
+const fallbackNatalChart: NatalChartDisplay = {
+  title: "出生星盤預覽",
+  summary: ["太陽 獅子", "月亮 摩羯", "上升 雙子"],
+  points: [
+    { key: "sun", symbol: "☉", sign: "獅子", degreeInSign: 5, x: 42, y: 43 },
+    { key: "moon", symbol: "☽", sign: "摩羯", degreeInSign: 18, x: 28, y: 58 },
+    { key: "ascendant", symbol: "ASC", sign: "雙子", degreeInSign: 12, x: 68, y: 51 },
+    { key: "mercury", symbol: "☿", sign: "巨蟹", degreeInSign: 21, x: 61, y: 45 },
+    { key: "venus", symbol: "♀", sign: "處女", degreeInSign: 9, x: 55, y: 67 },
+    { key: "mars", symbol: "♂", sign: "天蠍", degreeInSign: 14, x: 36, y: 68 },
+    { key: "jupiter", symbol: "♃", sign: "水瓶", degreeInSign: 3, x: 24, y: 49 },
+    { key: "saturn", symbol: "♄", sign: "牡羊", degreeInSign: 27, x: 51, y: 36 },
+  ],
+};
+
 function StageVideo({
   src,
   loop = true,
@@ -242,6 +272,29 @@ function LoadingAnalysisVideo({ src, soundEnabled }: { src: string; soundEnabled
   );
 }
 
+function NatalChartReveal({ chart }: { chart: NatalChartDisplay }) {
+  return (
+    <div className="natal-reveal-still" aria-label="出生星盤預覽">
+      <img src="/comic/story/13-natal-chart-still.png" alt="" />
+      <div className="natal-chart-layer" aria-hidden="true">
+        {chart.points.map((point) => (
+          <span
+            key={`${point.key}-${point.x}-${point.y}`}
+            className={`natal-point natal-point-${point.key}`}
+            style={{ left: `${point.x}%`, top: `${point.y}%` }}
+          >
+            {point.symbol}
+          </span>
+        ))}
+      </div>
+      <div className="natal-summary">
+        <span>{chart.title}</span>
+        <strong>{chart.summary.join(" · ")}</strong>
+      </div>
+    </div>
+  );
+}
+
 export default function Home() {
   const [stage, setStage] = useState<Stage>("opening");
   const [intakeStep, setIntakeStep] = useState<IntakeStep>("name");
@@ -263,6 +316,7 @@ export default function Home() {
   const [soundEnabled, setSoundEnabled] = useState(false);
   const [journeyStarted, setJourneyStarted] = useState(false);
   const [destinyPreview, setDestinyPreview] = useState<DestinyPreview>(fallbackDestinyPreview);
+  const [natalChart, setNatalChart] = useState<NatalChartDisplay>(fallbackNatalChart);
   const [analysisFinished, setAnalysisFinished] = useState(false);
 
   const displayName = name.trim() || "乘客";
@@ -418,14 +472,16 @@ export default function Home() {
       }),
     })
       .then(async (response) => {
-        const data = (await response.json()) as { preview?: DestinyPreview; error?: string };
+        const data = (await response.json()) as { preview?: DestinyPreview; chartDisplay?: NatalChartDisplay; error?: string };
         if (!response.ok || !data.preview) {
           throw new Error(data.error || "班次表暫時無法校準");
         }
         setDestinyPreview(data.preview);
+        setNatalChart(data.chartDisplay || fallbackNatalChart);
       })
       .catch(() => {
         setDestinyPreview(fallbackDestinyPreview);
+        setNatalChart(fallbackNatalChart);
         setNotice("班次表先用預覽模式開啟。正式生成需要在 Railway Variables 加入新的 OPENAI_API_KEY。");
       })
       .finally(() => setAnalysisFinished(true));
@@ -774,12 +830,15 @@ export default function Home() {
           <section className="scene cinematic-scene">
             <StageVideo src={videos.teaser} loop={false} soundEnabled={soundEnabled} onEnded={() => setVideoEnded(true)} />
             {isVideoGateReady && (
-              <div className="scene-copy bottom delayed-copy">
+              <>
+                <NatalChartReveal chart={natalChart} />
+              <div className="scene-copy bottom delayed-copy chart-reveal-copy">
                 <p className="line">完整班次表在我手上。要不要看看，下一站會把你帶去哪？</p>
                 <button className="primary-button" onClick={() => setStage("free")}>
                   翻開第一頁
                 </button>
               </div>
+              </>
             )}
           </section>
         )}

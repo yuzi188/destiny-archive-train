@@ -195,7 +195,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    return Response.json({ preview: JSON.parse(outputText) });
+    return Response.json({ preview: JSON.parse(outputText), chartDisplay: calculatedChart.astrology.display });
   } catch {
     return Response.json({ error: "model returned invalid JSON" }, { status: 502 });
   }

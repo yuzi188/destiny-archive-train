@@ -161,6 +161,7 @@ button:disabled {
 .stage-video {
   position: absolute;
   inset: 0;
+  z-index: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -189,6 +190,7 @@ button:disabled {
   content: "";
   position: absolute;
   inset: 0;
+  z-index: 2;
   background:
     linear-gradient(180deg, rgba(7, 8, 9, 0.16), rgba(7, 8, 9, 0.28) 48%, rgba(7, 8, 9, 0.94)),
     linear-gradient(90deg, rgba(7, 8, 9, 0.26), transparent 32%, transparent 68%, rgba(7, 8, 9, 0.28));
@@ -197,8 +199,108 @@ button:disabled {
 
 .scene-copy {
   position: relative;
-  z-index: 2;
+  z-index: 3;
   padding: 0 22px;
+}
+
+.natal-reveal-still {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  background: #070809;
+  animation: chartStillIn 700ms ease both;
+}
+
+.natal-reveal-still img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(0.86) contrast(1.06);
+}
+
+.natal-chart-layer {
+  position: absolute;
+  inset: 0;
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+
+.natal-point {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  transform: translate(-50%, -50%);
+  border: 1px solid rgba(237, 205, 142, 0.76);
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(13, 21, 32, 0.92), rgba(7, 8, 9, 0.42));
+  box-shadow: 0 0 14px rgba(142, 201, 255, 0.52), 0 0 22px rgba(237, 205, 142, 0.28);
+  color: #f6dfaa;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1;
+  animation: chartPointWrite 820ms ease both;
+}
+
+.natal-point-ascendant {
+  width: 42px;
+  color: #9dccff;
+  font-size: 11px;
+  letter-spacing: 0;
+}
+
+.natal-summary {
+  position: absolute;
+  left: 26px;
+  right: 26px;
+  bottom: 154px;
+  z-index: 3;
+  display: grid;
+  gap: 5px;
+  color: rgba(247, 239, 228, 0.92);
+  text-shadow: 0 4px 18px rgba(0, 0, 0, 0.85);
+}
+
+.natal-summary span {
+  color: var(--gold);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.natal-summary strong {
+  font-size: 18px;
+  line-height: 1.35;
+}
+
+.chart-reveal-copy {
+  z-index: 4;
+}
+
+@keyframes chartStillIn {
+  from {
+    opacity: 0;
+    filter: blur(3px);
+  }
+
+  to {
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+
+@keyframes chartPointWrite {
+  from {
+    opacity: 0;
+    scale: 0.72;
+  }
+
+  to {
+    opacity: 1;
+    scale: 1;
+  }
 }
 
 .start-gate {
