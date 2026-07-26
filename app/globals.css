@@ -921,25 +921,25 @@ input:focus {
 .archive-page em,
 .cover-page dd,
 .cover-page p {
-  color: rgba(12, 8, 5, 0.94);
-  font-family: var(--archive-hand-font);
-  font-weight: 400;
+  color: rgba(11, 8, 5, 0.96);
+  font-family: "Noto Serif TC", "Songti TC", "Songti SC", "PMingLiU", serif;
+  font-weight: 800;
   letter-spacing: 0;
 }
 
 .archive-page p {
-  margin: 0 0 8px;
-  font-size: 14px;
-  line-height: 1.72;
+  margin: 0 0 10px;
+  font-size: 17px;
+  line-height: 1.58;
   text-align: center;
-  text-shadow: 0 1px 0 rgba(255, 248, 225, 0.22), 0 0 1px rgba(0, 0, 0, 0.38);
+  text-shadow: 0 1px 0 rgba(255, 248, 225, 0.24), 0 0 2px rgba(0, 0, 0, 0.34);
 }
 
 .archive-page strong {
   display: block;
-  margin: 12px auto 0;
-  font-size: 17px;
-  line-height: 1.62;
+  margin: 14px auto 0;
+  font-size: 18px;
+  line-height: 1.5;
 }
 
 .archive-page.cover-page {
@@ -991,15 +991,15 @@ input:focus {
 
 .cover-page dd {
   margin: 0;
-  font-size: 13px;
-  line-height: 1.32;
+  font-size: 16px;
+  line-height: 1.28;
   overflow-wrap: anywhere;
 }
 
 .cover-page p {
   margin-top: 10px;
-  font-size: 12px;
-  line-height: 1.42;
+  font-size: 15px;
+  line-height: 1.38;
 }
 
 .right-page {
@@ -1028,11 +1028,11 @@ input:focus {
 }
 
 .analysis-page p {
-  font-size: 14px;
+  font-size: 17px;
 }
 
 .analysis-page strong {
-  font-size: 15px;
+  font-size: 18px;
 }
 
 .lower-page {
@@ -1069,16 +1069,16 @@ input:focus {
 }
 
 .report-page p {
-  font-size: 14px;
-  line-height: 1.68;
+  font-size: 16px;
+  line-height: 1.54;
 }
 
 .report-page em {
   display: block;
   margin-top: 10px;
-  font-size: 16px;
+  font-size: 17px;
   font-style: normal;
-  line-height: 1.72;
+  line-height: 1.54;
 }
 
 .split-page {
@@ -1094,12 +1094,12 @@ input:focus {
 
 .split-page p,
 .locked-page p {
-  font-size: 14px;
-  line-height: 1.68;
+  font-size: 17px;
+  line-height: 1.54;
 }
 
 .split-page strong {
-  font-size: 16px;
+  font-size: 18px;
 }
 
 .locked-page {
@@ -1130,7 +1130,7 @@ input:focus {
   min-height: 54px;
   margin: 0 0 8px;
   align-items: center;
-  font-size: 13px;
+  font-size: 16px;
   line-height: 1.32;
 }
 
@@ -1138,9 +1138,9 @@ input:focus {
 .locked-page i,
 .locked-page em {
   display: block;
-  font-family: var(--archive-hand-font);
+  font-family: "Noto Serif TC", "Songti TC", "Songti SC", "PMingLiU", serif;
   font-style: normal;
-  font-weight: 400;
+  font-weight: 800;
   letter-spacing: 0;
   text-shadow: 0 2px 12px rgba(0, 0, 0, 0.92), 0 0 10px rgba(247, 239, 228, 0.18);
 }
