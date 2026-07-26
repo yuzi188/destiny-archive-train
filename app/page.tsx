@@ -482,7 +482,7 @@ export default function Home() {
         birthplace,
         concern,
       }),
-    })
+      })
       .then(async (response) => {
         const data = (await response.json()) as { preview?: DestinyPreview; chartDisplay?: NatalChartDisplay; error?: string };
         if (!response.ok || !data.preview) {
@@ -490,12 +490,12 @@ export default function Home() {
         }
         setDestinyPreview(data.preview);
         setNatalChart(data.chartDisplay || fallbackNatalChart);
+        setAnalysisFinished(true);
       })
       .catch(() => {
-        setDestinyPreview(fallbackDestinyPreview);
-        setNatalChart(fallbackNatalChart);
-      })
-      .finally(() => setAnalysisFinished(true));
+        setAnalysisFinished(false);
+        setNotice("班次表尚未校準完成，請重新調度一次。");
+      });
   }
 
   async function claimFullReport() {
@@ -861,6 +861,11 @@ export default function Home() {
               {canRevealAnalysis && (
                 <button className="primary-button analysis-button" onClick={() => setStage("reveal")}>
                   翻開第一頁
+                </button>
+              )}
+              {!analysisFinished && notice && (
+                <button className="primary-button analysis-button" onClick={startAnalysis}>
+                  重新調度班次
                 </button>
               )}
             </div>
