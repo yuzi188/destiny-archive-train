@@ -93,16 +93,40 @@ function clean(value: unknown) {
 function extractOutputText(payload: unknown) {
   const response = payload as {
     output_text?: string;
-    output?: Array<{ content?: Array<{ text?: string }> }>;
+    output?: Array<{ content?: Array<{ parsed?: unknown; text?: unknown; type?: string }> }>;
   };
 
   if (typeof response.output_text === "string") return response.output_text;
 
   return response.output
     ?.flatMap((item) => item.content ?? [])
-    .map((content) => content.text)
+    .map((content) => {
+      if (content.parsed && typeof content.parsed === "object") return JSON.stringify(content.parsed);
+      if (typeof content.text === "string") return content.text;
+      if (content.text && typeof content.text === "object") return JSON.stringify(content.text);
+      return "";
+    })
     .filter(Boolean)
     .join("\n");
+}
+
+function parseModelJson(outputText: string) {
+  const cleaned = outputText
+    .trim()
+    .replace(/^```(?:json)?/i, "")
+    .replace(/```$/i, "")
+    .trim();
+
+  try {
+    return JSON.parse(cleaned);
+  } catch {
+    const start = cleaned.indexOf("{");
+    const end = cleaned.lastIndexOf("}");
+    if (start >= 0 && end > start) {
+      return JSON.parse(cleaned.slice(start, end + 1));
+    }
+    throw new Error("model returned invalid JSON");
+  }
 }
 
 export async function POST(request: Request) {
@@ -195,7 +219,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    return Response.json({ preview: JSON.parse(outputText), chartDisplay: calculatedChart.astrology.display });
+    return Response.json({ preview: parseModelJson(outputText), chartDisplay: calculatedChart.astrology.display });
   } catch {
     return Response.json({ error: "model returned invalid JSON" }, { status: 502 });
   }
