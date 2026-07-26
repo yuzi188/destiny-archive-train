@@ -212,6 +212,7 @@ export default function Home() {
     setCheckoutOpen(false);
     setJourneyStarted(false);
     setSoundEnabled(false);
+    setVideoEnded(false);
   }
 
   function openIntake() {
@@ -268,7 +269,13 @@ export default function Home() {
 
   function startJourney() {
     setJourneyStarted(true);
+    setVideoEnded(false);
     enableSound();
+  }
+
+  function finishOpeningVideo() {
+    setVideoEnded(true);
+    setStage("enter");
   }
 
   return (
@@ -299,23 +306,14 @@ export default function Home() {
               loop={false}
               soundEnabled={soundEnabled}
               shouldPlay={journeyStarted}
-              onEnded={() => setVideoEnded(true)}
+              onEnded={finishOpeningVideo}
             />
             {!journeyStarted && (
-              <div className="start-gate">
-                <p className="kicker">第 13 月台</p>
-                <h1>命運列車即將進站</h1>
-                <button className="primary-button" onClick={startJourney} type="button">
-                  啟程
-                </button>
-              </div>
-            )}
-            {isVideoGateReady && (
               <div className="scene-copy bottom delayed-copy">
                 <p className="kicker">今晚 23:13</p>
                 <h1>第 13 月台</h1>
                 <p>你收到一張沒有寄件人的車票。目的地寫著：你一直不敢去的人生。</p>
-                <button className="primary-button" onClick={() => setStage("enter")}>
+                <button className="primary-button" onClick={startJourney} type="button">
                   查看手上的票
                 </button>
               </div>
