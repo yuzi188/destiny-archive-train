@@ -13,6 +13,7 @@
   --wood: #23140d;
   --app-viewport-height: 100dvh;
   --keyboard-offset: 0px;
+  --archive-hand-font: "BiauKai", "DFKai-SB", "KaiTi", "STKaiti", cursive;
 }
 
 @theme inline {
@@ -722,16 +723,55 @@ input:focus {
   border-radius: 0;
   background: transparent;
   color: #14110e;
+  font-family: var(--archive-hand-font);
   box-shadow: none;
   backdrop-filter: none;
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.28);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.2), 0 0 1px rgba(20, 17, 14, 0.22);
+}
+
+.archive-page > * {
+  animation: inkWrite 900ms ease both;
+}
+
+.archive-page > :nth-child(2) {
+  animation-delay: 120ms;
+}
+
+.archive-page > :nth-child(3) {
+  animation-delay: 240ms;
+}
+
+.archive-page > :nth-child(4) {
+  animation-delay: 360ms;
+}
+
+.archive-page > :nth-child(5) {
+  animation-delay: 480ms;
+}
+
+.archive-page > :nth-child(6) {
+  animation-delay: 600ms;
+}
+
+@keyframes inkWrite {
+  from {
+    opacity: 0;
+    clip-path: inset(0 100% 0 0);
+    filter: blur(1px);
+  }
+
+  to {
+    opacity: 1;
+    clip-path: inset(0 0 0 0);
+    filter: blur(0);
+  }
 }
 
 .archive-page p {
   margin: 0 0 10px;
-  color: rgba(20, 17, 14, 0.86);
+  color: rgba(20, 17, 14, 0.88);
   font-size: 15px;
-  font-weight: 800;
+  font-weight: 600;
   line-height: 1.62;
 }
 
@@ -744,16 +784,18 @@ input:focus {
 }
 
 .archive-page.cover-page {
-  width: min(72vw, 346px);
-  margin: 2vh auto 0;
+  width: min(66vw, 318px);
+  margin: 4vh auto 0;
   text-align: center;
   transform: perspective(900px) rotateX(2deg) rotateZ(-0.35deg);
   transform-origin: 50% 42%;
 }
 
 .cover-page span {
-  margin-bottom: 34px;
-  font-size: 24px;
+  margin-bottom: 28px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 22px;
+  font-weight: 900;
   line-height: 1.2;
   letter-spacing: 0;
 }
@@ -768,21 +810,22 @@ input:focus {
 
 .cover-page dl {
   display: grid;
-  gap: 22px;
+  gap: 17px;
   margin: 0;
 }
 
 .cover-page div {
   display: grid;
-  grid-template-columns: minmax(120px, 0.9fr) minmax(0, 1.1fr);
-  gap: 18px;
+  grid-template-columns: minmax(112px, 0.9fr) minmax(0, 1.1fr);
+  gap: 14px;
   text-align: left;
   align-items: baseline;
 }
 
 .cover-page dt {
   color: rgba(20, 17, 14, 0.58);
-  font-size: 21px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 19px;
   line-height: 1.25;
   font-weight: 900;
   text-transform: uppercase;
@@ -791,15 +834,16 @@ input:focus {
 .cover-page dd {
   margin: 0;
   color: #14110e;
-  font-size: 23px;
-  font-weight: 900;
+  font-size: 25px;
+  font-weight: 700;
   line-height: 1.25;
   overflow-wrap: anywhere;
 }
 
 .cover-page p {
   margin-top: 24px;
-  font-size: 21px;
+  font-size: 24px;
+  font-weight: 700;
   line-height: 1.35;
   text-align: center;
 }
@@ -818,30 +862,36 @@ input:focus {
 }
 
 .analysis-page {
-  align-self: stretch;
-  width: min(74vw, 350px);
-  margin: 2vh auto 0;
-  padding-left: clamp(10px, 2vw, 16px);
+  align-self: center;
+  width: min(58vw, 276px);
+  margin: 7vh auto 0;
+  padding: 0;
+  text-align: center;
   transform: translateY(-2vh) perspective(900px) rotateX(1.2deg) rotateZ(-0.35deg);
   transform-origin: 50% 20%;
 }
 
 .analysis-page span {
-  margin: 0 0 21px;
+  margin: 0 0 24px;
+  color: #aa3131;
   font-size: 14px;
+  font-weight: 900;
   line-height: 1.2;
 }
 
 .analysis-page p {
-  margin-bottom: 14px;
-  font-size: 18px;
-  line-height: 1.5;
+  margin-bottom: 15px;
+  font-size: 23px;
+  line-height: 1.42;
+  text-align: center;
 }
 
 .analysis-page strong {
-  margin-top: 18px;
-  font-size: 18px;
-  line-height: 1.45;
+  margin-top: 20px;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.42;
+  text-align: center;
 }
 
 .lower-page {
@@ -851,50 +901,53 @@ input:focus {
 }
 
 .report-page {
-  width: min(76vw, 360px);
-  margin: 18vh auto 0;
+  width: min(63vw, 300px);
+  margin: 19vh auto 0;
   transform: translateX(1vw);
   text-align: center;
 }
 
 .report-page span,
 .split-page span {
-  margin-bottom: 24px;
+  margin-bottom: 22px;
   color: #b53232;
   font-size: 20px;
+  font-weight: 900;
   line-height: 1.25;
   letter-spacing: 0;
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.18);
 }
 
 .report-page strong {
-  margin: 0 auto 18px;
+  margin: 0 auto 20px;
   color: #14110e;
-  font-size: 34px;
+  font-size: 38px;
+  font-weight: 700;
   line-height: 1.35;
 }
 
 .report-page p {
-  margin-bottom: 13px;
+  margin-bottom: 12px;
   color: rgba(20, 17, 14, 0.86);
-  font-size: 18px;
-  line-height: 1.48;
-  text-align: left;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.42;
+  text-align: center;
 }
 
 .report-page em {
   display: block;
   margin-top: 12px;
   color: #14110e;
-  font-size: 19px;
+  font-size: 22px;
   font-style: normal;
-  font-weight: 900;
+  font-weight: 700;
   line-height: 1.45;
 }
 
 .split-page {
-  width: min(70vw, 330px);
-  margin: 22vh auto 0;
+  width: min(58vw, 278px);
+  margin: 28vh auto 0;
   text-align: center;
   transform: translateX(-1vw) perspective(900px) rotateX(1.2deg) rotateZ(-2deg);
   transform-origin: 50% 30%;
@@ -902,19 +955,21 @@ input:focus {
 
 .split-page p {
   margin-bottom: 16px;
-  font-size: 19px;
-  line-height: 1.48;
+  font-size: 23px;
+  font-weight: 600;
+  line-height: 1.42;
 }
 
 .split-page strong {
   margin-top: 18px;
-  font-size: 20px;
-  line-height: 1.45;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.42;
 }
 
 .locked-page {
-  width: min(82vw, 390px);
-  margin: 26vh auto 0;
+  width: min(72vw, 344px);
+  margin: 42vh auto 0;
   background: transparent;
   color: #f7efe4;
   text-align: center;
@@ -925,16 +980,17 @@ input:focus {
 
 .locked-page span {
   color: #d8b36d;
-  margin-bottom: 22px;
-  font-size: 20px;
+  margin-bottom: 24px;
+  font-size: 25px;
+  font-weight: 700;
   line-height: 1.25;
 }
 
 .locked-page p {
   color: rgba(247, 239, 228, 0.86);
   margin-bottom: 13px;
-  font-size: 21px;
-  font-weight: 900;
+  font-size: 24px;
+  font-weight: 700;
   line-height: 1.34;
 }
 
