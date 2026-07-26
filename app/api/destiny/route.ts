@@ -110,6 +110,18 @@ function extractOutputText(payload: unknown) {
     .join("\n");
 }
 
+function extractChatText(payload: unknown) {
+  const response = payload as {
+    choices?: Array<{ message?: { content?: string | Array<{ text?: string; type?: string }> } }>;
+  };
+  const content = response.choices?.[0]?.message?.content;
+  if (typeof content === "string") return content;
+  return content
+    ?.map((item) => item.text)
+    .filter(Boolean)
+    .join("\n");
+}
+
 function parseModelJson(outputText: string) {
   const cleaned = outputText
     .trim()
@@ -180,6 +192,13 @@ export async function POST(request: Request) {
     `calculatedChart：${JSON.stringify(calculatedChart)}`,
   ].join("\n");
 
+  const responseFormat = {
+    type: "json_schema",
+    name: "destiny_archive_preview",
+    strict: true,
+    schema: jsonSchema,
+  };
+
   const upstream = await fetch("https://api.openai.com/v1/responses", {
     method: "POST",
     headers: {
@@ -194,14 +213,9 @@ export async function POST(request: Request) {
           content: [{ type: "input_text", text: prompt }],
         },
       ],
-      max_output_tokens: 1600,
+      max_output_tokens: 3200,
       text: {
-        format: {
-          type: "json_schema",
-          name: "destiny_archive_preview",
-          strict: true,
-          schema: jsonSchema,
-        },
+        format: responseFormat,
       },
     }),
   });
@@ -213,7 +227,34 @@ export async function POST(request: Request) {
     return Response.json({ error: message }, { status: 502 });
   }
 
-  const outputText = extractOutputText(result);
+  let outputText = extractOutputText(result);
+
+  if (!outputText) {
+    const chatFallback = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model,
+        messages: [{ role: "user", content: prompt }],
+        max_completion_tokens: 3200,
+        response_format: {
+          type: "json_schema",
+          json_schema: responseFormat,
+        },
+      }),
+    });
+
+    const chatResult = await chatFallback.json();
+    if (!chatFallback.ok) {
+      const message = chatResult?.error?.message || "OpenAI request failed";
+      return Response.json({ error: message }, { status: 502 });
+    }
+    outputText = extractChatText(chatResult);
+  }
+
   if (!outputText) {
     return Response.json({ error: "empty model response" }, { status: 502 });
   }
