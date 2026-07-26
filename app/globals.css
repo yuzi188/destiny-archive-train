@@ -1113,9 +1113,9 @@ input:focus {
   left: 50%;
   top: 0;
   height: 100%;
-  --book-title-top: 47%;
-  --book-body-top: 53dvh;
-  width: min(54vw, 258px);
+  --book-title-top: 40%;
+  --book-body-top: 46dvh;
+  width: min(50vw, 238px);
   margin: 0;
   padding: var(--book-body-top) 0 0;
   text-align: center;
@@ -1131,6 +1131,19 @@ input:focus {
 
 .split-page strong {
   font-size: 16px;
+}
+
+.split-page span {
+  color: #f0c978;
+  text-shadow: 0 3px 16px rgba(0, 0, 0, 0.96), 0 0 26px rgba(0, 0, 0, 0.78);
+}
+
+.split-page p,
+.split-page strong {
+  color: rgba(255, 249, 235, 0.96);
+  font-family: "Noto Serif TC", "Songti TC", "Songti SC", "PMingLiU", serif;
+  font-weight: 900;
+  text-shadow: 0 3px 16px rgba(0, 0, 0, 0.98), 0 0 24px rgba(0, 0, 0, 0.82);
 }
 
 .locked-page {
@@ -1191,18 +1204,32 @@ input:focus {
   text-align: left;
 }
 .final-lock {
-  min-height: 116vh;
-  justify-content: flex-end;
-  padding-bottom: 18px;
+  min-height: 100dvh;
+  justify-content: flex-start;
+  padding-bottom: 0;
 }
 
 .final-copy {
-  margin-top: 20px;
-  margin-bottom: 12px;
-  padding: 20px 18px;
+  position: absolute;
+  left: 50%;
+  bottom: calc(env(safe-area-inset-bottom) + 96px);
+  width: min(90vw, 430px);
+  margin: 0;
+  padding: 0 18px;
   border: 0;
   background: transparent;
   backdrop-filter: none;
+  transform: translateX(-50%);
+}
+
+.final-copy h2 {
+  font-size: 25px;
+  line-height: 1.22;
+}
+
+.final-copy p {
+  font-size: 15px;
+  line-height: 1.5;
 }
 
 .final-copy h2,
