@@ -245,6 +245,11 @@ button:disabled {
   line-height: 1.7;
 }
 
+.subtle-note {
+  color: rgba(216, 179, 109, 0.82);
+  font-size: 13px;
+}
+
 .analysis-button {
   max-width: 320px;
   margin: 0 auto;

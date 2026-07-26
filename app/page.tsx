@@ -24,6 +24,35 @@ type Product = {
   bullets: string[];
 };
 
+type DestinyChapter = {
+  title: string;
+  headline?: string;
+  lines: string[];
+};
+
+type DestinyPreview = {
+  recordStatus: string;
+  chapters: {
+    seen: DestinyChapter;
+    inner: DestinyChapter;
+    repeat: DestinyChapter;
+    blindSpot: DestinyChapter;
+    future: DestinyChapter;
+  };
+  profile: {
+    title: string;
+    core: string;
+    bars: Array<{ label: string; value: number }>;
+  };
+  locked: {
+    title: string;
+    chapters: string[];
+    closingTitle: string;
+    closingLine: string;
+    cta: string;
+  };
+};
+
 const videos = {
   opening: "/videos/01-opening.mp4",
   enter: "/videos/02-enter-carriage.mp4",
@@ -89,6 +118,52 @@ const formatTimeInput = (value: string) => {
   const digits = value.replace(/\D/g, "").slice(0, 4);
   if (digits.length <= 2) return digits;
   return `${digits.slice(0, 2)}:${digits.slice(2)}`;
+};
+
+const fallbackDestinyPreview: DestinyPreview = {
+  recordStatus: "已建立命運檔案",
+  chapters: {
+    seen: {
+      title: "第一章｜我看到的你",
+      lines: ["你總是走在最前面。", "不是因為你喜歡領導。", "而是你很早就發現，很多事情只能靠自己。"],
+      headline: "你的第一個人格特徵：Leader",
+    },
+    inner: {
+      title: "第二章｜真正的你",
+      lines: ["外表冷靜。", "內心敏感。", "越在乎的人，越容易沉默。"],
+    },
+    repeat: {
+      title: "第三章｜一直重複的人生",
+      lines: ["工作。你總是承擔。", "感情。你總是等待。", "人生。你總是比別人晚相信自己。"],
+    },
+    blindSpot: {
+      title: "第五章｜你的盲點",
+      headline: "你最大的敵人。",
+      lines: ["不是失敗。", "而是凡事都想自己完成。"],
+    },
+    future: {
+      title: "第六章｜如果不改",
+      lines: ["如果繼續這樣。", "你可能會失去："],
+      headline: "關係。健康。機會。",
+    },
+  },
+  profile: {
+    title: "第四章｜你的命格",
+    core: "核心人格　Leader",
+    bars: [
+      { label: "火元素", value: 72 },
+      { label: "理性", value: 58 },
+      { label: "情感", value: 34 },
+      { label: "行動力", value: 68 },
+    ],
+  },
+  locked: {
+    title: "後續章節已鎖住",
+    chapters: ["Chapter 07　你的愛情　LOCKED", "Chapter 08　你的財富　LOCKED", "Chapter 09　人生劇透　LOCKED"],
+    closingTitle: "我已經完成第一部分。",
+    closingLine: "但真正的故事，還沒有開始。",
+    cta: "繼續查看後面的班次",
+  },
 };
 
 function StageVideo({
@@ -161,6 +236,8 @@ export default function Home() {
   const [videoEnded, setVideoEnded] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(false);
   const [journeyStarted, setJourneyStarted] = useState(false);
+  const [destinyPreview, setDestinyPreview] = useState<DestinyPreview>(fallbackDestinyPreview);
+  const [analysisFinished, setAnalysisFinished] = useState(false);
 
   const displayName = name.trim() || "乘客";
   const selected = products[selectedProduct];
@@ -185,6 +262,7 @@ export default function Home() {
   );
   const [loadingLine, setLoadingLine] = useState(0);
   const [analysisReady, setAnalysisReady] = useState(false);
+  const canRevealAnalysis = analysisReady && analysisFinished;
   const isVideoGateReady = !gatedVideoStages.includes(stage) || videoEnded;
   const hasVideoStage = stage !== "free";
 
@@ -222,7 +300,34 @@ export default function Home() {
 
   function startAnalysis() {
     setAnalysisReady(false);
+    setAnalysisFinished(false);
+    setNotice("");
     setStage("loading");
+
+    void fetch("/api/destiny", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name,
+        birth,
+        time,
+        unknownTime,
+        birthplace,
+        concern,
+      }),
+    })
+      .then(async (response) => {
+        const data = (await response.json()) as { preview?: DestinyPreview; error?: string };
+        if (!response.ok || !data.preview) {
+          throw new Error(data.error || "班次表暫時無法校準");
+        }
+        setDestinyPreview(data.preview);
+      })
+      .catch(() => {
+        setDestinyPreview(fallbackDestinyPreview);
+        setNotice("班次表先用預覽模式開啟。正式生成需要在 Railway Variables 加入新的 OPENAI_API_KEY。");
+      })
+      .finally(() => setAnalysisFinished(true));
   }
 
   function isCurrentStepReady() {
@@ -531,11 +636,12 @@ export default function Home() {
               <p className="kicker">命運檔案調度中</p>
               <h2>{loadingText[loadingLine]}</h2>
               <p className="analysis-note">
-                {analysisReady
+                {canRevealAnalysis
                   ? "懷錶已停在你的第一段路線。"
                   : "懷錶會停在這裡循環等待，直到班次表完成校準。"}
               </p>
-              {analysisReady && (
+              {notice && <p className="analysis-note subtle-note">{notice}</p>}
+              {canRevealAnalysis && (
                 <button className="primary-button analysis-button" onClick={() => setStage("reveal")}>
                   翻開第一頁
                 </button>
@@ -621,72 +727,73 @@ export default function Home() {
                     <dd>{birthplace || "尚未填寫"}</dd>
                   </div>
                 </dl>
-                <p>已建立命運檔案</p>
+                <p>{destinyPreview.recordStatus}</p>
               </div>
             </article>
             <article className="story-panel book-panel aligned-book" style={{ backgroundImage: "url('/comic/story/06-analysis-page.png')" }}>
               <div className="archive-page page-overlay analysis-page">
-                <span>第一章｜我看到的你</span>
-                <p>你總是走在最前面。</p>
-                <p>不是因為你喜歡領導。</p>
-                <p>而是你很早就發現，很多事情只能靠自己。</p>
-                <strong>你的第一個人格特徵：Leader</strong>
+                <span>{destinyPreview.chapters.seen.title}</span>
+                {destinyPreview.chapters.seen.lines.map((line) => (
+                  <p key={line}>{line}</p>
+                ))}
+                {destinyPreview.chapters.seen.headline && <strong>{destinyPreview.chapters.seen.headline}</strong>}
               </div>
             </article>
             <article className="story-panel book-panel aligned-book" style={{ backgroundImage: "url('/comic/story/06-analysis-page.png')" }}>
               <div className="archive-page page-overlay analysis-page">
-                <span>第二章｜真正的你</span>
-                <p>外表冷靜。</p>
-                <p>內心敏感。</p>
-                <p>越在乎的人，越容易沉默。</p>
+                <span>{destinyPreview.chapters.inner.title}</span>
+                {destinyPreview.chapters.inner.lines.map((line) => (
+                  <p key={line}>{line}</p>
+                ))}
               </div>
             </article>
             <article className="story-panel book-panel aligned-book" style={{ backgroundImage: "url('/comic/story/06-analysis-page.png')" }}>
               <div className="archive-page page-overlay analysis-page">
-                <span>第三章｜一直重複的人生</span>
-                <p>工作。你總是承擔。</p>
-                <p>感情。你總是等待。</p>
-                <p>人生。你總是比別人晚相信自己。</p>
+                <span>{destinyPreview.chapters.repeat.title}</span>
+                {destinyPreview.chapters.repeat.lines.map((line) => (
+                  <p key={line}>{line}</p>
+                ))}
               </div>
             </article>
             <article className="story-panel book-panel aligned-book" style={{ backgroundImage: "url('/comic/story/09-destiny-profile.png')" }}>
               <div className="archive-page page-overlay report-page">
-                <span>第四章｜你的命格</span>
-                <strong>核心人格　Leader</strong>
-                <p>火元素 <b style={{ width: "72%" }} /></p>
-                <p>理性 <b style={{ width: "58%" }} /></p>
-                <p>情感 <b style={{ width: "34%" }} /></p>
-                <p>行動力 <b style={{ width: "68%" }} /></p>
+                <span>{destinyPreview.profile.title}</span>
+                <strong>{destinyPreview.profile.core}</strong>
+                {destinyPreview.profile.bars.map((bar) => (
+                  <p key={bar.label}>{bar.label} <b style={{ width: `${bar.value}%` }} /></p>
+                ))}
               </div>
             </article>
             <article className="story-panel" style={{ backgroundImage: "url('/comic/story/10-blind-spot.png')" }}>
               <div className="story-copy lower">
-                <span>第五章｜你的盲點</span>
-                <h2>你最大的敵人。</h2>
-                <p>不是失敗。</p>
-                <p>而是凡事都想自己完成。</p>
+                <span>{destinyPreview.chapters.blindSpot.title}</span>
+                <h2>{destinyPreview.chapters.blindSpot.headline}</h2>
+                {destinyPreview.chapters.blindSpot.lines.map((line) => (
+                  <p key={line}>{line}</p>
+                ))}
               </div>
             </article>
             <article className="story-panel book-panel" style={{ backgroundImage: "url('/comic/story/11-if-not-change.png')" }}>
               <div className="archive-page split-page">
-                <span>第六章｜如果不改</span>
-                <p>如果繼續這樣。</p>
-                <p>你可能會失去：</p>
-                <strong>關係。健康。機會。</strong>
+                <span>{destinyPreview.chapters.future.title}</span>
+                {destinyPreview.chapters.future.lines.map((line) => (
+                  <p key={line}>{line}</p>
+                ))}
+                {destinyPreview.chapters.future.headline && <strong>{destinyPreview.chapters.future.headline}</strong>}
               </div>
             </article>
             <article className="story-panel book-panel final-lock" style={{ backgroundImage: "url('/comic/story/12-locked-chapters.png')" }}>
               <div className="archive-page locked-page">
-                <span>後續章節已鎖住</span>
-                <p>Chapter 07　你的愛情　LOCKED</p>
-                <p>Chapter 08　你的財富　LOCKED</p>
-                <p>Chapter 09　人生劇透　LOCKED</p>
+                <span>{destinyPreview.locked.title}</span>
+                {destinyPreview.locked.chapters.map((line) => (
+                  <p key={line}>{line}</p>
+                ))}
               </div>
               <div className="story-copy final-copy">
-                <h2>我已經完成第一部分。</h2>
-                <p>但真正的故事，還沒有開始。</p>
+                <h2>{destinyPreview.locked.closingTitle}</h2>
+                <p>{destinyPreview.locked.closingLine}</p>
                 <button className="primary-button comic-next-button" onClick={() => setStage("payTeaser")}>
-                  繼續查看後面的班次
+                  {destinyPreview.locked.cta}
                 </button>
               </div>
             </article>
