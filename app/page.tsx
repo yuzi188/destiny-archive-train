@@ -353,6 +353,24 @@ export default function Home() {
   const isVideoGateReady = !gatedVideoStages.includes(stage) || videoEnded;
   const hasVideoStage = stage !== "free";
 
+  function buildClaimPayload() {
+    return {
+      recipientEmail: reportRecipientEmail,
+      passenger: {
+        name,
+        birth,
+        time,
+        unknownTime,
+        birthplace,
+        concern,
+        email,
+        marketing,
+      },
+      preview: destinyPreview,
+      chartDisplay: natalChart,
+    };
+  }
+
   useEffect(() => {
     if (stage !== "loading") return;
     setLoadingLine(0);
@@ -424,6 +442,39 @@ export default function Home() {
       window.removeEventListener("resize", syncViewport);
     };
   }, [stage]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const transactionId = params.get("khqr_tx");
+    const successHash = params.get("success_hash");
+    if (!transactionId || !successHash) return;
+
+    const storageKey = `destiny-pending-claim:${transactionId}`;
+    const pendingClaim = window.localStorage.getItem(storageKey);
+    if (!pendingClaim) return;
+
+    window.localStorage.removeItem(storageKey);
+    window.history.replaceState({}, "", window.location.pathname);
+    setClaimStatus("sending");
+    setCheckoutOpen(true);
+    setNotice("付款已完成，正在寄出完整報告...");
+
+    void fetch("/api/claim", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: pendingClaim,
+    })
+      .then(async (response) => {
+        const data = (await response.json()) as { sent?: boolean; message?: string };
+        if (!response.ok) throw new Error(data.message || "report delivery failed");
+        setClaimStatus(data.sent ? "sent" : "pending");
+        setNotice(data.message || "付款完成，完整報告已送出。");
+      })
+      .catch(() => {
+        setClaimStatus("error");
+        setNotice("付款完成，但報告寄送暫時失敗。請保留交易紀錄，我們可以補寄。");
+      });
+  }, []);
 
   function resetFlow() {
     setStage("opening");
@@ -516,33 +567,27 @@ export default function Home() {
     setNotice("");
 
     try {
-      const response = await fetch("/api/claim", {
+      const paymentResponse = await fetch("/api/payment/khqrpay/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          recipientEmail: reportRecipientEmail,
-          passenger: {
-            name,
-            birth,
-            time,
-            unknownTime,
-            birthplace,
-            concern,
-            email,
-            marketing,
-          },
-          preview: destinyPreview,
-          chartDisplay: natalChart,
+          productId: selectedProduct,
         }),
       });
-      const data = (await response.json()) as { sent?: boolean; message?: string };
-      if (!response.ok) throw new Error(data.message || "report delivery failed");
+      const payment = (await paymentResponse.json()) as {
+        checkoutUrl?: string;
+        transactionId?: string;
+        error?: string;
+      };
+      if (!paymentResponse.ok || !payment.checkoutUrl || !payment.transactionId) {
+        throw new Error(payment.error || "payment setup failed");
+      }
 
-      setClaimStatus(data.sent ? "sent" : "pending");
-      setNotice(data.message || "完整報告已送出。");
+      window.localStorage.setItem(`destiny-pending-claim:${payment.transactionId}`, JSON.stringify(buildClaimPayload()));
+      window.location.href = payment.checkoutUrl;
     } catch {
       setClaimStatus("error");
-      setNotice("報告已建立，但寄送暫時沒有成功。請稍後再試。");
+      setNotice("付款連結暫時建立失敗。請確認 KHQRPay 金鑰已放到 Railway。");
     }
   }
 
@@ -1072,7 +1117,7 @@ export default function Home() {
                 ×
               </button>
               <h2 id="checkout-title">完整班次表</h2>
-              <p id="checkout-desc">先保留原本購買畫面。現在不接支付，領取後完整命運檔案會寄到你的信箱。</p>
+              <p id="checkout-desc">選擇班次後使用 KHQR 掃碼付款。付款完成後，完整命運檔案會寄到你的信箱。</p>
               <div className="product-list">
                 {productEntries.map(([id, product]) => (
                   <button
@@ -1098,9 +1143,9 @@ export default function Home() {
                 <button type="button" onClick={() => setCoupon((value) => !value)}>
                   {coupon ? "已套用 -NT$180" : "套用試乘優惠"}
                 </button>
-                <span>本次暫不付款</span>
-                <strong>NT$0</strong>
-                <span>原方案金額</span>
+                <span>KHQRPay 付款金額</span>
+                <strong>依下一頁 USD 顯示</strong>
+                <span>方案參考金額</span>
                 <strong>{formatPrice(total)}</strong>
               </div>
               <label className="check-row">
@@ -1132,7 +1177,7 @@ export default function Home() {
                 disabled={!privacy || !terms || claimStatus === "sending"}
                 onClick={claimFullReport}
               >
-                {claimStatus === "sending" ? "寄送中..." : "領取完整報告"}
+                  {claimStatus === "sending" ? "正在建立 KHQR..." : "前往 KHQR 掃碼付款"}
               </button>
               {notice && <p className="notice">{notice}</p>}
             </section>
