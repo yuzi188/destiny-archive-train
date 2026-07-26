@@ -971,9 +971,19 @@ export default function Home() {
             <article className="story-panel book-panel final-lock" style={{ backgroundImage: "url('/comic/story/12-locked-chapters.png')" }}>
               <div className="archive-page locked-page">
                 <span>{destinyPreview.locked.title}</span>
-                {destinyPreview.locked.chapters.map((line) => (
-                  <p key={line}>{line}</p>
-                ))}
+                {destinyPreview.locked.chapters.map((line) => {
+                  const parts = line.split(/\s+/).filter(Boolean);
+                  const chapter = parts.slice(0, 2).join(" ") || line;
+                  const status = parts.at(-1) || "LOCKED";
+                  const title = parts.slice(2, -1).join(" ");
+                  return (
+                    <p key={line}>
+                      <b>{chapter}</b>
+                      <i>{title}</i>
+                      <em>{status}</em>
+                    </p>
+                  );
+                })}
               </div>
               <div className="story-copy final-copy">
                 <h2>{destinyPreview.locked.closingTitle}</h2>

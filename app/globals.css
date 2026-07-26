@@ -925,36 +925,39 @@ input:focus {
 }
 
 .archive-page.cover-page {
-  width: min(66vw, 318px);
-  margin: 4vh auto 0;
+  position: absolute;
+  left: 50%;
+  top: 34.5%;
+  width: min(61vw, 292px);
+  margin: 0;
   text-align: center;
-  transform: perspective(900px) rotateX(2deg) rotateZ(-0.35deg);
+  transform: translateX(-50%) perspective(900px) rotateX(2deg) rotateZ(-0.35deg);
   transform-origin: 50% 42%;
 }
 
 .cover-page span {
-  margin-bottom: 28px;
-  font-size: 25px;
+  margin-bottom: 17px;
+  font-size: 21px;
 }
 
 .cover-page i {
   display: block;
-  width: 78%;
+  width: 70%;
   height: 1px;
-  margin: 0 auto 28px;
+  margin: 0 auto 17px;
   background: rgba(20, 17, 14, 0.3);
 }
 
 .cover-page dl {
   display: grid;
-  gap: 14px;
+  gap: 9px;
   margin: 0;
 }
 
 .cover-page div {
   display: grid;
-  grid-template-columns: minmax(92px, 0.82fr) minmax(0, 1.18fr);
-  gap: 12px;
+  grid-template-columns: minmax(86px, 0.82fr) minmax(0, 1.18fr);
+  gap: 10px;
   text-align: left;
   align-items: baseline;
 }
@@ -962,7 +965,7 @@ input:focus {
 .cover-page dt {
   color: rgba(36, 27, 18, 0.42);
   font-family: var(--archive-title-font);
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 800;
   line-height: 1.25;
   text-transform: uppercase;
@@ -970,14 +973,14 @@ input:focus {
 
 .cover-page dd {
   margin: 0;
-  font-size: 20px;
+  font-size: 16px;
   line-height: 1.32;
   overflow-wrap: anywhere;
 }
 
 .cover-page p {
-  margin-top: 22px;
-  font-size: 18px;
+  margin-top: 13px;
+  font-size: 15px;
   line-height: 1.42;
 }
 
@@ -1076,23 +1079,57 @@ input:focus {
 }
 
 .locked-page {
-  width: min(72vw, 344px);
-  margin: 42vh auto 0;
+  position: absolute;
+  left: 50%;
+  top: 42%;
+  width: min(66vw, 318px);
+  margin: 0;
   background: transparent;
   color: #f7efe4;
   text-align: center;
-  transform: perspective(900px) rotateX(1deg) rotateZ(-1.8deg);
+  transform: translateX(-50%) perspective(900px) rotateX(1deg) rotateZ(-1.8deg);
   transform-origin: 50% 35%;
   text-shadow: 0 2px 14px rgba(0, 0, 0, 0.86), 0 0 28px rgba(0, 0, 0, 0.62);
 }
 
 .locked-page span {
   color: #d8b36d;
+  margin-bottom: 20px;
+  font-size: 19px;
 }
 
 .locked-page p {
   color: rgba(247, 239, 228, 0.86);
-  margin-bottom: 13px;
+  display: grid;
+  grid-template-columns: 0.86fr 1fr 0.82fr;
+  gap: 7px;
+  min-height: 54px;
+  margin: 0 0 10px;
+  align-items: center;
+  font-size: 14px;
+  line-height: 1.32;
+}
+
+.locked-page b,
+.locked-page i,
+.locked-page em {
+  display: block;
+  font-family: var(--archive-hand-font);
+  font-style: normal;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+.locked-page b {
+  text-align: right;
+}
+
+.locked-page i {
+  text-align: center;
+}
+
+.locked-page em {
+  text-align: left;
 }
 .final-lock {
   min-height: 116vh;
