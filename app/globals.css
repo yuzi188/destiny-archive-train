@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC&family=Noto+Serif+TC:wght@600;800;900&display=swap");
+﻿@import url("https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+TC:wght@600;800;900&display=swap");
 @import "tailwindcss";
 
 :root {
@@ -14,8 +14,8 @@
   --wood: #23140d;
   --app-viewport-height: 100dvh;
   --keyboard-offset: 0px;
-  --archive-hand-font: "LXGW WenKai TC", "BiauKai", "DFKai-SB", "KaiTi", "STKaiti", cursive;
-  --archive-title-font: "Noto Serif TC", "Songti TC", "PMingLiU", serif;
+  --archive-hand-font: "Ma Shan Zheng", "HanziPen TC", "Kaiti TC", "Xingkai TC", "BiauKai", "DFKai-SB", "KaiTi", "STKaiti", cursive;
+  --archive-title-font: "Noto Serif TC", "Songti TC", "Songti SC", "PMingLiU", serif;
 }
 
 @theme inline {
@@ -782,44 +782,34 @@ input:focus {
   margin-bottom: 52px;
 }
 
-.story-copy span,
-.archive-page span {
-  display: block;
-  margin-bottom: 10px;
-  color: #6f4a26;
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 13px;
-  font-weight: 900;
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.22), 0 0 10px rgba(216, 179, 109, 0.18);
-}
-
 .story-copy span {
+  display: block;
+  margin-bottom: 12px;
   color: #d8b36d;
+  font-family: var(--archive-title-font);
+  font-size: 16px;
+  font-weight: 900;
+  line-height: 1.25;
+  letter-spacing: 0;
+  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.92);
 }
 
 .story-copy h2 {
-  margin-bottom: 12px;
+  margin: 0 0 12px;
   color: #fff6ea;
-  font-size: 31px;
-  line-height: 1.25;
+  font-family: var(--archive-title-font);
+  font-size: 28px;
+  font-weight: 900;
+  line-height: 1.24;
 }
 
 .story-copy p {
-  margin: 0;
-  color: rgba(255, 246, 234, 0.94);
-  font-size: 20px;
-  font-weight: 800;
-  line-height: 1.62;
-}
-
-.book-panel {
-  justify-content: center;
-}
-
-.book-panel::before {
-  background:
-    linear-gradient(180deg, rgba(5, 6, 7, 0.12), rgba(5, 6, 7, 0.2) 52%, rgba(5, 6, 7, 0.62)),
-    linear-gradient(90deg, rgba(5, 6, 7, 0.12), transparent 55%, rgba(5, 6, 7, 0.18));
+  margin: 0 0 7px;
+  color: rgba(255, 246, 234, 0.9);
+  font-family: var(--archive-hand-font);
+  font-size: 17px;
+  font-weight: 400;
+  line-height: 1.7;
 }
 
 .archive-page {
@@ -828,11 +818,12 @@ input:focus {
   border: 0;
   border-radius: 0;
   background: transparent;
-  color: #14110e;
+  color: rgba(22, 16, 10, 0.78);
   font-family: var(--archive-hand-font);
+  font-weight: 400;
   box-shadow: none;
   backdrop-filter: none;
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.2), 0 0 1px rgba(20, 17, 14, 0.22);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.16), 0 0 1px rgba(20, 17, 14, 0.18);
 }
 
 .story-copy > *,
@@ -874,7 +865,7 @@ input:focus {
   from {
     opacity: 0;
     clip-path: inset(0 100% 0 0);
-    filter: blur(1.5px);
+    filter: blur(1.4px);
     transform: translateY(5px);
   }
 
@@ -886,21 +877,41 @@ input:focus {
   }
 }
 
+.archive-page span {
+  display: block;
+  margin: 0 0 18px;
+  color: #a8782d;
+  font-family: var(--archive-title-font);
+  font-size: 23px;
+  font-weight: 900;
+  line-height: 1.25;
+  letter-spacing: 0;
+  text-shadow: 0 1px 0 rgba(255, 248, 225, 0.38), 0 0 16px rgba(216, 179, 109, 0.22);
+}
+
+.archive-page p,
+.archive-page strong,
+.archive-page em,
+.cover-page dd,
+.cover-page p {
+  color: rgba(22, 16, 10, 0.76);
+  font-family: var(--archive-hand-font);
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
 .archive-page p {
   margin: 0 0 9px;
-  color: rgba(18, 15, 12, 0.82);
   font-size: 14px;
-  font-weight: 400;
-  line-height: 1.78;
+  line-height: 1.82;
+  text-align: center;
 }
 
 .archive-page strong {
   display: block;
-  margin-top: 13px;
-  color: #17120d;
+  margin: 12px auto 0;
   font-size: 16px;
-  font-weight: 500;
-  line-height: 1.56;
+  line-height: 1.62;
 }
 
 .archive-page.cover-page {
@@ -913,61 +924,51 @@ input:focus {
 
 .cover-page span {
   margin-bottom: 28px;
-  color: #9f762f;
-  font-family: var(--archive-title-font);
-  font-size: 24px;
-  font-weight: 900;
-  line-height: 1.2;
-  letter-spacing: 0;
-  text-shadow: 0 1px 0 rgba(255, 248, 225, 0.38), 0 0 14px rgba(216, 179, 109, 0.18);
+  font-size: 25px;
 }
 
 .cover-page i {
   display: block;
   width: 78%;
   height: 1px;
-  margin: 0 auto 30px;
-  background: rgba(20, 17, 14, 0.36);
+  margin: 0 auto 28px;
+  background: rgba(20, 17, 14, 0.3);
 }
 
 .cover-page dl {
   display: grid;
-  gap: 17px;
+  gap: 14px;
   margin: 0;
 }
 
 .cover-page div {
   display: grid;
-  grid-template-columns: minmax(112px, 0.9fr) minmax(0, 1.1fr);
-  gap: 14px;
+  grid-template-columns: minmax(92px, 0.82fr) minmax(0, 1.18fr);
+  gap: 12px;
   text-align: left;
   align-items: baseline;
 }
 
 .cover-page dt {
-  color: rgba(20, 17, 14, 0.58);
+  color: rgba(36, 27, 18, 0.42);
   font-family: var(--archive-title-font);
-  font-size: 16px;
-  line-height: 1.25;
+  font-size: 13px;
   font-weight: 800;
+  line-height: 1.25;
   text-transform: uppercase;
 }
 
 .cover-page dd {
   margin: 0;
-  color: #14110e;
-  font-size: 22px;
-  font-weight: 500;
-  line-height: 1.25;
+  font-size: 20px;
+  line-height: 1.32;
   overflow-wrap: anywhere;
 }
 
 .cover-page p {
-  margin-top: 24px;
-  font-size: 20px;
-  font-weight: 400;
-  line-height: 1.35;
-  text-align: center;
+  margin-top: 22px;
+  font-size: 18px;
+  line-height: 1.42;
 }
 
 .right-page {
@@ -985,8 +986,8 @@ input:focus {
 
 .analysis-page {
   align-self: center;
-  width: min(58vw, 276px);
-  margin: 7vh auto 0;
+  width: min(56vw, 266px);
+  margin: 8vh auto 0;
   padding: 0;
   text-align: center;
   transform: translateY(-2vh) perspective(900px) rotateX(1.2deg) rotateZ(-0.35deg);
@@ -994,29 +995,15 @@ input:focus {
 }
 
 .analysis-page span {
-  margin: 0 0 24px;
-  color: #9f762f;
-  font-family: var(--archive-title-font);
-  font-size: 19px;
-  font-weight: 900;
-  line-height: 1.2;
-  text-shadow: 0 1px 0 rgba(255, 248, 225, 0.36), 0 0 14px rgba(216, 179, 109, 0.16);
+  font-size: 22px;
 }
 
 .analysis-page p {
-  margin-bottom: 12px;
-  font-size: 17px;
-  font-weight: 400;
-  line-height: 1.72;
-  text-align: center;
+  font-size: 15px;
 }
 
 .analysis-page strong {
-  margin-top: 20px;
-  font-size: 18px;
-  font-weight: 500;
-  line-height: 1.58;
-  text-align: center;
+  font-size: 16px;
 }
 
 .lower-page {
@@ -1026,72 +1013,56 @@ input:focus {
 }
 
 .report-page {
-  width: min(63vw, 300px);
-  margin: 19vh auto 0;
-  transform: translateX(1vw);
+  width: min(58vw, 278px);
+  margin: 20vh auto 0;
   text-align: center;
+  transform: translateX(1vw);
 }
 
 .report-page span,
 .split-page span {
-  margin-bottom: 18px;
-  color: #9f762f;
-  font-family: var(--archive-title-font);
-  font-size: 25px;
-  font-weight: 900;
-  line-height: 1.25;
-  letter-spacing: 0;
-  text-shadow: 0 1px 0 rgba(255, 248, 225, 0.38), 0 0 16px rgba(216, 179, 109, 0.2);
+  font-size: 27px;
 }
 
 .report-page strong {
-  margin: 0 auto 18px;
-  color: #14110e;
+  display: block;
+  margin: 0 auto 14px;
+  color: rgba(18, 13, 9, 0.86);
   font-family: var(--archive-title-font);
-  font-size: 36px;
+  font-size: 33px;
   font-weight: 900;
-  line-height: 1.35;
+  line-height: 1.24;
 }
 
 .report-page p {
-  margin-bottom: 9px;
-  color: rgba(18, 15, 12, 0.82);
-  font-size: 15px;
-  font-weight: 400;
-  line-height: 1.72;
-  text-align: center;
+  font-size: 14px;
+  line-height: 1.82;
 }
 
 .report-page em {
   display: block;
   margin-top: 10px;
-  color: #14110e;
-  font-size: 16px;
+  font-size: 15px;
   font-style: normal;
-  font-weight: 500;
-  line-height: 1.62;
+  line-height: 1.72;
 }
 
 .split-page {
-  width: min(58vw, 278px);
+  width: min(56vw, 268px);
   margin: 28vh auto 0;
   text-align: center;
   transform: translateX(-1vw) perspective(900px) rotateX(1.2deg) rotateZ(-2deg);
   transform-origin: 50% 30%;
 }
 
-.split-page p {
-  margin-bottom: 12px;
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 1.76;
+.split-page p,
+.locked-page p {
+  font-size: 15px;
+  line-height: 1.82;
 }
 
 .split-page strong {
-  margin-top: 18px;
-  font-size: 18px;
-  font-weight: 500;
-  line-height: 1.56;
+  font-size: 16px;
 }
 
 .locked-page {
@@ -1107,21 +1078,12 @@ input:focus {
 
 .locked-page span {
   color: #d8b36d;
-  margin-bottom: 24px;
-  font-family: var(--archive-title-font);
-  font-size: 23px;
-  font-weight: 900;
-  line-height: 1.25;
 }
 
 .locked-page p {
   color: rgba(247, 239, 228, 0.86);
   margin-bottom: 13px;
-  font-size: 18px;
-  font-weight: 400;
-  line-height: 1.34;
 }
-
 .final-lock {
   min-height: 116vh;
   justify-content: flex-end;
@@ -1324,3 +1286,4 @@ input:focus {
     bottom: 44px;
   }
 }
+

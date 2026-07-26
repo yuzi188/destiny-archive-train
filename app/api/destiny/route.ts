@@ -107,7 +107,7 @@ function extractOutputText(payload: unknown) {
 
 export async function POST(request: Request) {
   const apiKey = process.env.OPENAI_API_KEY;
-  const model = process.env.OPENAI_MODEL || "gpt-5.6-sol";
+  const model = process.env.OPENAI_MODEL || "gpt-5.6";
 
   if (!apiKey) {
     return Response.json({ error: "OPENAI_API_KEY is not configured" }, { status: 503 });
