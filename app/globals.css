@@ -906,14 +906,20 @@ input:focus {
 
 .archive-page span {
   display: block;
-  margin: 0 0 18px;
+  position: absolute;
+  left: 50%;
+  top: var(--book-title-top, 34%);
+  width: var(--book-title-width, min(58vw, 276px));
+  margin: 0;
   color: #c99b49;
   font-family: var(--archive-title-font);
   font-size: 26px;
   font-weight: 900;
   line-height: 1.25;
   letter-spacing: 0;
+  text-align: center;
   text-shadow: 0 1px 0 rgba(255, 248, 225, 0.38), 0 0 16px rgba(216, 179, 109, 0.22);
+  transform: translateX(-50%);
 }
 
 .archive-page p,
@@ -945,31 +951,42 @@ input:focus {
 .archive-page.cover-page {
   position: absolute;
   left: 50%;
-  top: 32.5%;
+  top: 0;
+  height: 100%;
+  --book-title-top: 28.5%;
+  --book-title-width: min(58vw, 284px);
   width: min(54vw, 258px);
   margin: 0;
   text-align: center;
-  transform: translateX(-50%) translateY(-50%) perspective(900px) rotateX(2deg) rotateZ(-0.35deg);
+  transform: translateX(-50%) perspective(900px) rotateX(2deg) rotateZ(-0.35deg);
   transform-origin: 50% 30%;
 }
 
 .cover-page span {
-  margin-bottom: 76px;
-  font-size: 21px;
+  font-size: 22px;
 }
 
 .cover-page i {
+  position: absolute;
+  left: 50%;
+  top: 33.2%;
   display: block;
-  width: 70%;
+  width: 76%;
   height: 1px;
-  margin: 0 auto 13px;
+  margin: 0;
   background: rgba(20, 17, 14, 0.3);
+  transform: translateX(-50%);
 }
 
 .cover-page dl {
+  position: absolute;
+  left: 50%;
+  top: 37.2%;
+  width: min(54vw, 258px);
   display: grid;
-  gap: 6px;
+  gap: 9px;
   margin: 0;
+  transform: translateX(-50%);
 }
 
 .cover-page div {
@@ -997,9 +1014,14 @@ input:focus {
 }
 
 .cover-page p {
-  margin-top: 10px;
+  position: absolute;
+  left: 50%;
+  top: 49.5%;
+  width: min(54vw, 258px);
+  margin: 0;
   font-size: 15px;
   line-height: 1.38;
+  transform: translateX(-50%);
 }
 
 .right-page {
@@ -1013,17 +1035,19 @@ input:focus {
 .analysis-page {
   position: absolute;
   left: 50%;
-  top: 35%;
+  top: 0;
+  height: 100%;
+  --book-title-top: 34.5%;
+  --book-body-top: 43%;
   width: min(58vw, 276px);
   margin: 0;
-  padding: 0;
+  padding: var(--book-body-top) 0 0;
   text-align: center;
-  transform: translateX(-50%) translateY(-50%) perspective(900px) rotateX(1.2deg) rotateZ(-0.35deg);
+  transform: translateX(-50%) perspective(900px) rotateX(1.2deg) rotateZ(-0.35deg);
   transform-origin: 50% 24%;
 }
 
 .analysis-page span {
-  margin-bottom: 72px;
   font-size: 25px;
 }
 
@@ -1044,17 +1068,20 @@ input:focus {
 .report-page {
   position: absolute;
   left: 50%;
-  top: 35.5%;
+  top: 0;
+  height: 100%;
+  --book-title-top: 34.5%;
+  --book-body-top: 41.5%;
   width: min(58vw, 276px);
   margin: 0;
+  padding: var(--book-body-top) 0 0;
   text-align: center;
-  transform: translateX(-50%) translateY(-50%) perspective(900px) rotateX(1.2deg) rotateZ(-0.35deg);
+  transform: translateX(-50%) perspective(900px) rotateX(1.2deg) rotateZ(-0.35deg);
   transform-origin: 50% 24%;
 }
 
 .report-page span,
 .split-page span {
-  margin-bottom: 58px;
   font-size: 28px;
 }
 
@@ -1084,11 +1111,15 @@ input:focus {
 .split-page {
   position: absolute;
   left: 50%;
-  top: 35.5%;
+  top: 0;
+  height: 100%;
+  --book-title-top: 46%;
+  --book-body-top: 54%;
   width: min(58vw, 276px);
   margin: 0;
+  padding: var(--book-body-top) 0 0;
   text-align: center;
-  transform: translateX(-50%) translateY(-50%) perspective(900px) rotateX(1.2deg) rotateZ(-2deg);
+  transform: translateX(-50%) perspective(900px) rotateX(1.2deg) rotateZ(-2deg);
   transform-origin: 50% 24%;
 }
 
@@ -1105,9 +1136,13 @@ input:focus {
 .locked-page {
   position: absolute;
   left: 50%;
-  top: 43%;
+  top: 0;
+  height: 100%;
+  --book-title-top: 53%;
+  --book-body-top: 60%;
   width: min(58vw, 278px);
   margin: 0;
+  padding: var(--book-body-top) 0 0;
   background: transparent;
   color: #f7efe4;
   text-align: center;
@@ -1118,7 +1153,6 @@ input:focus {
 
 .locked-page span {
   color: #f0c978;
-  margin-bottom: 64px;
   font-size: 21px;
 }
 
