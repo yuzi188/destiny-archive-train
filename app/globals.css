@@ -945,16 +945,16 @@ input:focus {
 .archive-page.cover-page {
   position: absolute;
   left: 50%;
-  top: 40.5%;
+  top: 32.5%;
   width: min(54vw, 258px);
   margin: 0;
   text-align: center;
   transform: translateX(-50%) translateY(-50%) perspective(900px) rotateX(2deg) rotateZ(-0.35deg);
-  transform-origin: 50% 42%;
+  transform-origin: 50% 30%;
 }
 
 .cover-page span {
-  margin-bottom: 12px;
+  margin-bottom: 76px;
   font-size: 21px;
 }
 
@@ -1013,17 +1013,17 @@ input:focus {
 .analysis-page {
   position: absolute;
   left: 50%;
-  top: 48.5%;
+  top: 35%;
   width: min(58vw, 276px);
   margin: 0;
   padding: 0;
   text-align: center;
   transform: translateX(-50%) translateY(-50%) perspective(900px) rotateX(1.2deg) rotateZ(-0.35deg);
-  transform-origin: 50% 50%;
+  transform-origin: 50% 24%;
 }
 
 .analysis-page span {
-  margin-bottom: 22px;
+  margin-bottom: 72px;
   font-size: 25px;
 }
 
@@ -1044,15 +1044,17 @@ input:focus {
 .report-page {
   position: absolute;
   left: 50%;
-  top: 49%;
+  top: 35.5%;
   width: min(58vw, 276px);
   margin: 0;
   text-align: center;
   transform: translateX(-50%) translateY(-50%) perspective(900px) rotateX(1.2deg) rotateZ(-0.35deg);
+  transform-origin: 50% 24%;
 }
 
 .report-page span,
 .split-page span {
+  margin-bottom: 58px;
   font-size: 28px;
 }
 
@@ -1082,12 +1084,12 @@ input:focus {
 .split-page {
   position: absolute;
   left: 50%;
-  top: 53%;
+  top: 35.5%;
   width: min(58vw, 276px);
   margin: 0;
   text-align: center;
   transform: translateX(-50%) translateY(-50%) perspective(900px) rotateX(1.2deg) rotateZ(-2deg);
-  transform-origin: 50% 30%;
+  transform-origin: 50% 24%;
 }
 
 .split-page p,
@@ -1103,7 +1105,7 @@ input:focus {
 .locked-page {
   position: absolute;
   left: 50%;
-  top: 49%;
+  top: 43%;
   width: min(58vw, 278px);
   margin: 0;
   background: transparent;
@@ -1116,7 +1118,7 @@ input:focus {
 
 .locked-page span {
   color: #f0c978;
-  margin-bottom: 18px;
+  margin-bottom: 64px;
   font-size: 21px;
 }
 
