@@ -109,6 +109,11 @@ const products: Record<ProductId, Product> = {
 
 const productEntries = Object.entries(products) as Array<[ProductId, Product]>;
 const reportRecipientEmail = "q0983120788@gmail.com";
+const lockedChapterTitles = [
+  "第七章｜關係迴圈的觸發點",
+  "第八章｜界線與靠近的時機",
+  "第九章｜承擔者的轉向密語",
+];
 const stageOrder: Stage[] = [
   "opening",
   "enter",
@@ -123,6 +128,8 @@ const stageOrder: Stage[] = [
 const gatedVideoStages: Stage[] = ["opening", "enter", "dialogue", "reveal", "teaser", "payTeaser"];
 
 const formatPrice = (value: number) => `NT$${value.toLocaleString("zh-TW")}`;
+
+const cleanDisplayLine = (value: string) => value.replace(/^白話[：:]\s*/u, "").trim();
 
 const formatDateInput = (value: string) => {
   const digits = value.replace(/\D/g, "").slice(0, 8);
@@ -959,7 +966,7 @@ export default function Home() {
               <div className="archive-page page-overlay analysis-page">
                 <span>{destinyPreview.chapters.seen.title}</span>
                 {destinyPreview.chapters.seen.lines.map((line) => (
-                  <p key={line}>{line}</p>
+                  <p key={line}>{cleanDisplayLine(line)}</p>
                 ))}
                 {destinyPreview.chapters.seen.headline && <strong>{destinyPreview.chapters.seen.headline}</strong>}
               </div>
@@ -968,7 +975,7 @@ export default function Home() {
               <div className="archive-page page-overlay analysis-page">
                 <span>{destinyPreview.chapters.inner.title}</span>
                 {destinyPreview.chapters.inner.lines.map((line) => (
-                  <p key={line}>{line}</p>
+                  <p key={line}>{cleanDisplayLine(line)}</p>
                 ))}
               </div>
             </article>
@@ -976,7 +983,7 @@ export default function Home() {
               <div className="archive-page page-overlay analysis-page">
                 <span>{destinyPreview.chapters.repeat.title}</span>
                 {destinyPreview.chapters.repeat.lines.map((line) => (
-                  <p key={line}>{line}</p>
+                  <p key={line}>{cleanDisplayLine(line)}</p>
                 ))}
               </div>
             </article>
@@ -985,10 +992,10 @@ export default function Home() {
                 <span>{destinyPreview.profile.title}</span>
                 <strong>{destinyPreview.profile.destinyType}</strong>
                 {destinyPreview.profile.triangulation.map((line) => (
-                  <p key={line}>{line}</p>
+                  <p key={line}>{cleanDisplayLine(line)}</p>
                 ))}
                 {destinyPreview.profile.lines.map((line) => (
-                  <em key={line}>{line}</em>
+                  <em key={line}>{cleanDisplayLine(line)}</em>
                 ))}
               </div>
             </article>
@@ -997,7 +1004,7 @@ export default function Home() {
                 <span>{destinyPreview.chapters.blindSpot.title}</span>
                 <h2>{destinyPreview.chapters.blindSpot.headline}</h2>
                 {destinyPreview.chapters.blindSpot.lines.map((line) => (
-                  <p key={line}>{line}</p>
+                  <p key={line}>{cleanDisplayLine(line)}</p>
                 ))}
               </div>
             </article>
@@ -1005,7 +1012,7 @@ export default function Home() {
               <div className="archive-page split-page">
                 <span>{destinyPreview.chapters.future.title}</span>
                 {destinyPreview.chapters.future.lines.map((line) => (
-                  <p key={line}>{line}</p>
+                  <p key={line}>{cleanDisplayLine(line)}</p>
                 ))}
                 {destinyPreview.chapters.future.headline && <strong>{destinyPreview.chapters.future.headline}</strong>}
               </div>
@@ -1013,16 +1020,12 @@ export default function Home() {
             <article className="story-panel book-panel final-lock" style={{ backgroundImage: "url('/comic/story/12-locked-chapters.png')" }}>
               <div className="archive-page locked-page">
                 <span>{destinyPreview.locked.title}</span>
-                {destinyPreview.locked.chapters.map((line) => {
-                  const parts = line.split(/\s+/).filter(Boolean);
-                  const chapter = parts.slice(0, 2).join(" ") || line;
-                  const status = parts.at(-1) || "LOCKED";
-                  const title = parts.slice(2, -1).join(" ");
+                {lockedChapterTitles.map((line) => {
+                  const [chapter, title] = line.split("｜");
                   return (
                     <p key={line}>
                       <b>{chapter}</b>
                       <i>{title}</i>
-                      <em>{status}</em>
                     </p>
                   );
                 })}
