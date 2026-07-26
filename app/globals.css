@@ -1039,8 +1039,8 @@ input:focus {
   left: 50%;
   top: 0;
   height: 100%;
-  --book-title-top: 43.5%;
-  --book-body-top: 49.5dvh;
+  --book-title-top: 34.5%;
+  --book-body-top: 40.5dvh;
   width: min(52vw, 248px);
   margin: 0;
   padding: var(--book-body-top) 0 0;
