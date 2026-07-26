@@ -1071,12 +1071,37 @@ export default function Home() {
               >
                 ×
               </button>
-              <h2 id="checkout-title">領取完整報告</h2>
-              <p id="checkout-desc">不需要付款。完整命運檔案會寄到你的信箱。</p>
-              <div className="claim-card">
+              <h2 id="checkout-title">完整班次表</h2>
+              <p id="checkout-desc">先保留原本購買畫面。現在不接支付，領取後完整命運檔案會寄到你的信箱。</p>
+              <div className="product-list">
+                {productEntries.map(([id, product]) => (
+                  <button
+                    key={id}
+                    className={`product ${selectedProduct === id ? "active" : ""}`}
+                    type="button"
+                    onClick={() => setSelectedProduct(id)}
+                  >
+                    <span>{product.tag}</span>
+                    <strong>{product.name}</strong>
+                    <small>{product.bullets.join("｜")}</small>
+                    <em>
+                      <s>{formatPrice(product.oldPrice)}</s>
+                      {formatPrice(product.price)}
+                    </em>
+                  </button>
+                ))}
+              </div>
+              <div className="receipt">
                 <span>寄送信箱</span>
                 <strong>{reportRecipientEmail}</strong>
-                <p>內容包含約 1 萬字完整報告、命格三叉分析、八字星盤、愛情財富職涯與未來路線。</p>
+                <span>折扣車票</span>
+                <button type="button" onClick={() => setCoupon((value) => !value)}>
+                  {coupon ? "已套用 -NT$180" : "套用試乘優惠"}
+                </button>
+                <span>本次暫不付款</span>
+                <strong>NT$0</strong>
+                <span>原方案金額</span>
+                <strong>{formatPrice(total)}</strong>
               </div>
               <label className="check-row">
                 <input
