@@ -274,25 +274,14 @@ function LoadingAnalysisVideo({ src, soundEnabled }: { src: string; soundEnabled
 }
 
 function NatalChartReveal({ chart }: { chart: NatalChartDisplay }) {
-  const featuredPoints = chart.points.filter((point) => ["sun", "moon", "ascendant"].includes(point.key));
-
   return (
     <div className="natal-reveal-still" aria-label="出生星盤預覽">
       <img src="/comic/story/13-natal-chart-still.png" alt="" />
-      <div className="natal-chart-layer" aria-hidden="true">
-        {featuredPoints.map((point) => (
-          <span
-            key={`${point.key}-${point.x}-${point.y}`}
-            className={`natal-point natal-point-${point.key}`}
-            style={{ left: `${point.x}%`, top: `${point.y}%` }}
-          >
-            {point.symbol}
-          </span>
-        ))}
-      </div>
       <div className="natal-summary">
         <span>{chart.title}</span>
-        <strong>{chart.summary.join(" ｜ ")}</strong>
+        {chart.summary.map((line) => (
+          <strong key={line}>{line}</strong>
+        ))}
       </div>
     </div>
   );
