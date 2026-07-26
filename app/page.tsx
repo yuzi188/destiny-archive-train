@@ -104,7 +104,7 @@ const stageOrder: Stage[] = [
   "free",
   "payTeaser",
 ];
-const gatedVideoStages: Stage[] = ["opening", "enter", "dialogue", "intake", "reveal", "teaser", "payTeaser"];
+const gatedVideoStages: Stage[] = ["opening", "enter", "dialogue", "reveal", "teaser", "payTeaser"];
 
 const formatPrice = (value: number) => `NT$${value.toLocaleString("zh-TW")}`;
 
@@ -463,8 +463,7 @@ export default function Home() {
 
         {stage === "intake" && (
           <section className="scene intake-scene">
-            <StageVideo src={videos.intake} loop={false} soundEnabled={soundEnabled} onEnded={() => setVideoEnded(true)} />
-            {isVideoGateReady && (
+            <StageVideo src={videos.intake} soundEnabled={soundEnabled} />
             <div className="scene-copy form-panel delayed-copy">
               <p className="kicker">核對車票</p>
               <h2 className="intake-title">姓名。生日。出生地。還有你最近最想逃開的問題。</h2>
@@ -627,7 +626,6 @@ export default function Home() {
                 </div>
               </div>
             </div>
-            )}
           </section>
         )}
 
