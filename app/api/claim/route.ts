@@ -724,7 +724,7 @@ async function legacyPOST(request: Request) {
   }
 }
 
-export async function POST(request: Request) {
+async function queuedMemoryPOST(request: Request) {
   try {
     const payload = (await request.json().catch(() => ({}))) as ClaimRequest;
     const recipient = clean(payload.recipientEmail) || fallbackRecipient;
@@ -791,6 +791,100 @@ export async function POST(request: Request) {
     const subject = `第 13 月台｜${plan.name}｜${passengerName}`;
     const result = await generateAndSendFullReport(recipient, subject, payload);
 
+    if (!result.sent) {
+      return Response.json(
+        {
+          sent: false,
+          message: "尚未設定 Resend 郵件金鑰，無法寄出完整報告。",
+          reason: result.reason,
+        },
+        { status: 503 },
+      );
+    }
+
+    return Response.json({
+      sent: true,
+      queued: false,
+      message: `完整報告已寄出到 ${recipient}。`,
+    });
+  } catch (error) {
+    console.error("Claim email failed.", error);
+    return Response.json(
+      {
+        sent: false,
+        message: error instanceof Error ? error.message : "寄送報告時發生錯誤。",
+      },
+      { status: 502 },
+    );
+  }
+}
+
+export async function POST(request: Request) {
+  try {
+    const payload = (await request.json().catch(() => ({}))) as ClaimRequest;
+    const recipient = clean(payload.recipientEmail) || fallbackRecipient;
+    const plan = getPlan(payload.productId);
+    const passengerName = clean(payload.passenger?.name) || "乘客";
+    const subject = `第 13 月台｜${plan.name}｜${passengerName}`;
+
+    if (shouldSendIntroFirst(payload.productId)) {
+      const job = await createClaimJob({
+        productId: payload.productId,
+        planName: plan.name,
+        recipient,
+        passengerName,
+        payload,
+        fullSubject: subject,
+      });
+
+      const introResult = await sendIntroWithResend(recipient, `第 13 月台｜你的班次已受理｜${passengerName}`, payload);
+      if (!introResult.sent) {
+        await updateClaimJob(job.id, {
+          status: "error",
+          message: "受理通知寄送失敗。",
+          error: introResult.reason,
+        });
+        return Response.json(
+          {
+            sent: false,
+            jobId: job.id,
+            message: "尚未設定 Resend 郵件金鑰，無法寄出受理通知。",
+            reason: introResult.reason,
+          },
+          { status: 503 },
+        );
+      }
+
+      await updateClaimJob(job.id, {
+        status: "generating",
+        message: "受理通知已寄出，完整報告生成中。",
+      });
+
+      void generateAndSendFullReport(recipient, subject, payload)
+        .then(async () => {
+          await updateClaimJob(job.id, {
+            status: "sent",
+            message: "完整報告已製作完成並寄出第二封信。",
+          });
+        })
+        .catch(async (error) => {
+          await updateClaimJob(job.id, {
+            status: "error",
+            message: "完整報告生成或寄送失敗，請保留任務編號。",
+            error: error instanceof Error ? error.message : "unknown error",
+          });
+          console.error("Full report background delivery failed.", error);
+        });
+
+      return Response.json({
+        sent: true,
+        queued: true,
+        jobId: job.id,
+        message: `已先寄出班次受理通知。完整報告正在後台生成，任務編號：${job.id}`,
+      });
+    }
+
+    const result = await generateAndSendFullReport(recipient, subject, payload);
     if (!result.sent) {
       return Response.json(
         {

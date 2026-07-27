@@ -3,7 +3,7 @@ import { getClaimJob } from "../jobs";
 export async function GET(request: Request) {
   const url = new URL(request.url);
   const id = url.searchParams.get("jobId") || "";
-  const job = getClaimJob(id);
+  const job = await getClaimJob(id);
 
   if (!job) {
     return Response.json(
