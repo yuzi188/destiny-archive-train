@@ -38,7 +38,7 @@ export async function POST(request: Request) {
   const secretKey = clean(process.env.KHQRPAY_SECRET_KEY);
 
   if (!profileId || !secretKey) {
-    return Response.json({ error: "KHQRPay 尚未設定完成。" }, { status: 503 });
+    return Response.json({ error: "KHQRPay is not configured." }, { status: 503 });
   }
 
   const payload = (await request.json().catch(() => ({}))) as PaymentRequest;
@@ -49,8 +49,41 @@ export async function POST(request: Request) {
   const successUrl = `${origin}/?khqr_tx=${encodeURIComponent(transactionId)}`;
   const remark = productNames[productId];
   const hash = createHash("sha1").update(secretKey + transactionId + amount + successUrl + remark).digest("hex");
-  const checkoutUrl = new URL(`https://khqr.cc/api/payment/request/${profileId}`);
 
+  const qrApiUrl = `https://khqr.cc/api/${profileId}/payment-gateway/v1/payments/qr-api-khqrcc`;
+  const qrBody = new URLSearchParams({
+    transaction_id: transactionId,
+    amount,
+    success_url: successUrl,
+    remark,
+    hash,
+  });
+
+  const qrResponse = await fetch(qrApiUrl, {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: qrBody,
+  });
+  const qrResult = (await qrResponse.json().catch(() => null)) as {
+    responseCode?: number;
+    responseMessage?: string;
+    data?: {
+      qr?: string;
+      qr_url?: string;
+    };
+  } | null;
+
+  if (qrResponse.ok && qrResult?.responseCode === 0 && qrResult.data?.qr_url) {
+    return Response.json({
+      checkoutUrl: qrResult.data.qr_url,
+      qrUrl: qrResult.data.qr_url,
+      qr: qrResult.data.qr,
+      transactionId,
+      amount,
+    });
+  }
+
+  const checkoutUrl = new URL(`https://khqr.cc/api/payment/request/${profileId}`);
   checkoutUrl.searchParams.set("transaction_id", transactionId);
   checkoutUrl.searchParams.set("amount", amount);
   checkoutUrl.searchParams.set("success_url", successUrl);
@@ -61,5 +94,6 @@ export async function POST(request: Request) {
     checkoutUrl: checkoutUrl.toString(),
     transactionId,
     amount,
+    warning: qrResult?.responseMessage || "Direct QR API failed; using checkout page.",
   });
 }
