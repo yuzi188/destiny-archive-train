@@ -1014,6 +1014,7 @@ input:focus {
   max-width: 100%;
   overflow-wrap: anywhere;
   text-align: left;
+  transform: translateX(-28px);
 }
 
 .cover-page p {
