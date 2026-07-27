@@ -49,7 +49,7 @@ export async function POST(request: Request) {
   const successUrl = `${origin}/?khqr_tx=${encodeURIComponent(transactionId)}`;
   const remark = productNames[productId];
   const hash = createHash("sha1").update(secretKey + transactionId + amount + successUrl + remark).digest("hex");
-  const checkoutUrl = new URL(`https://khqr.cc/api/payment/requestv2/${profileId}`);
+  const checkoutUrl = new URL(`https://khqr.cc/api/payment/request/${profileId}`);
 
   checkoutUrl.searchParams.set("transaction_id", transactionId);
   checkoutUrl.searchParams.set("amount", amount);
