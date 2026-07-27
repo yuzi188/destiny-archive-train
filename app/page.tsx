@@ -568,6 +568,31 @@ export default function Home() {
     setNotice("");
 
     try {
+      const claimResponse = await fetch("/api/claim", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(buildClaimPayload()),
+      });
+      const claim = (await claimResponse.json()) as {
+        sent?: boolean;
+        message?: string;
+        error?: string;
+      };
+
+      if (!claimResponse.ok || !claim.sent) {
+        throw new Error(claim.message || claim.error || "claim failed");
+      }
+
+      setClaimStatus("sent");
+      setNotice(claim.message || "完整報告已寄出，請檢查信箱。");
+      return;
+    } catch {
+      setClaimStatus("error");
+      setNotice("寄送失敗，請確認 Resend 設定與收件信箱。");
+      return;
+    }
+
+    try {
       const paymentResponse = await fetch("/api/payment/khqrpay/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -1178,7 +1203,7 @@ export default function Home() {
                 disabled={!privacy || !terms || claimStatus === "sending"}
                 onClick={claimFullReport}
               >
-                  {claimStatus === "sending" ? "正在建立 KHQR..." : "前往 KHQR 掃碼付款"}
+                  {claimStatus === "sending" ? "正在產生並寄送報告..." : "寄送完整報告測試"}
               </button>
               {notice && <p className="notice">{notice}</p>}
             </section>
