@@ -767,6 +767,40 @@ input:focus {
   border-bottom: 1px solid rgba(247, 239, 228, 0.12);
 }
 
+.story-insert {
+  min-height: clamp(390px, 64vh, 520px);
+  padding: 46px 18px 22px;
+  background-size: cover;
+  background-position: center;
+}
+
+.story-insert::before {
+  background:
+    linear-gradient(180deg, rgba(5, 6, 7, 0.04), rgba(5, 6, 7, 0.22) 42%, rgba(5, 6, 7, 0.94)),
+    linear-gradient(90deg, rgba(5, 6, 7, 0.3), transparent 48%, rgba(5, 6, 7, 0.18));
+}
+
+.story-insert .insert-copy {
+  margin-bottom: 20px;
+}
+
+.story-insert .insert-copy span {
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.story-insert .insert-copy h2 {
+  margin-bottom: 8px;
+  font-size: 25px;
+}
+
+.story-insert .insert-copy p {
+  max-width: 360px;
+  margin-inline: auto;
+  font-size: 16px;
+  line-height: 1.55;
+}
+
 .book-panel {
   justify-content: flex-start;
   background-position: center top;

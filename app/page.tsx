@@ -1033,6 +1033,13 @@ export default function Home() {
                 </dl>
               </div>
             </article>
+            <article className="story-panel story-insert" style={{ backgroundImage: "url('/comic/story/14-open-first-page.png')" }}>
+              <div className="story-copy lower insert-copy">
+                <span>第一頁</span>
+                <h2>它不會直接給答案。</h2>
+                <p>只會先照出你真正的樣子。</p>
+              </div>
+            </article>
             <article className="story-panel book-panel aligned-book" style={{ backgroundImage: "url('/comic/story/06-analysis-page.png')" }}>
               <div className="archive-page page-overlay analysis-page">
                 <span>{destinyPreview.chapters.seen.title}</span>
@@ -1040,6 +1047,13 @@ export default function Home() {
                   <p key={line}>{cleanDisplayLine(line)}</p>
                 ))}
                 {destinyPreview.chapters.seen.headline && <strong>{destinyPreview.chapters.seen.headline}</strong>}
+              </div>
+            </article>
+            <article className="story-panel story-insert" style={{ backgroundImage: "url('/comic/story/15-rin-window-profile.png')" }}>
+              <div className="story-copy lower insert-copy">
+                <span>窗邊回聲</span>
+                <h2>你不是停住。</h2>
+                <p>你是在確認，這一步會不會讓一切失控。</p>
               </div>
             </article>
             <article className="story-panel book-panel aligned-book" style={{ backgroundImage: "url('/comic/story/06-analysis-page.png')" }}>
@@ -1050,12 +1064,26 @@ export default function Home() {
                 ))}
               </div>
             </article>
+            <article className="story-panel story-insert" style={{ backgroundImage: "url('/comic/story/16-pocket-watch-choice.png')" }}>
+              <div className="story-copy lower insert-copy">
+                <span>懷錶停格</span>
+                <h2>時間沒有催你。</h2>
+                <p>是同一個選擇，一直回到你面前。</p>
+              </div>
+            </article>
             <article className="story-panel book-panel aligned-book" style={{ backgroundImage: "url('/comic/story/06-analysis-page.png')" }}>
               <div className="archive-page page-overlay analysis-page">
                 <span>{destinyPreview.chapters.repeat.title}</span>
                 {destinyPreview.chapters.repeat.lines.map((line) => (
                   <p key={line}>{cleanDisplayLine(line)}</p>
                 ))}
+              </div>
+            </article>
+            <article className="story-panel story-insert" style={{ backgroundImage: "url('/comic/story/17-chart-lines-book.png')" }}>
+              <div className="story-copy lower insert-copy">
+                <span>命盤對軌</span>
+                <h2>這不是一句安慰。</h2>
+                <p>你的盤裡，本來就有這條軌道。</p>
               </div>
             </article>
             <article className="story-panel book-panel aligned-book" style={{ backgroundImage: "url('/comic/story/09-destiny-profile.png')" }}>
@@ -1077,6 +1105,13 @@ export default function Home() {
                 {destinyPreview.chapters.blindSpot.lines.map((line) => (
                   <p key={line}>{cleanDisplayLine(line)}</p>
                 ))}
+              </div>
+            </article>
+            <article className="story-panel story-insert" style={{ backgroundImage: "url('/comic/story/18-sealed-archive-book.png')" }}>
+              <div className="story-copy lower insert-copy">
+                <span>封存頁</span>
+                <h2>免費預覽，到這裡剛好。</h2>
+                <p>後面的頁面，不會自己打開。</p>
               </div>
             </article>
             <article className="story-panel book-panel" style={{ backgroundImage: "url('/comic/story/11-if-not-change.png')" }}>
