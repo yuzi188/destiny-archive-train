@@ -28,7 +28,7 @@ export async function POST(request: Request) {
     return Response.json({ error: "KHQRPay 尚未設定完成。" }, { status: 503 });
   }
 
-  const payload = (await request.json()) as PaymentRequest;
+  const payload = (await request.json().catch(() => ({}))) as PaymentRequest;
   const productId = payload.productId && payload.productId in pricesUsd ? payload.productId : "archive";
   const amount = pricesUsd[productId];
   const transactionId = `ABA-${Date.now()}-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
