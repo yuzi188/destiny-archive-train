@@ -65,6 +65,24 @@ type ReportSection = {
   focus: string;
 };
 
+const routeSections: ReportSection[] = [
+  {
+    title: "第一章｜被看見的那一面",
+    words: 900,
+    focus: "用八字與星盤摘要切入，說明使用者外在呈現、做事方式、被別人看見的第一印象，以及這些特質如何影響當前問題。",
+  },
+  {
+    title: "第二章｜反覆停靠的那一站",
+    words: 1000,
+    focus: "解析使用者反覆遇到的核心課題，包含壓力、關係、職涯或自我懷疑的循環，並用白話說明為什麼會一直重複。",
+  },
+  {
+    title: "第三章｜下一站的處方箋",
+    words: 1100,
+    focus: "給出未來 30 天可執行的方向，包含應該先處理什麼、暫時不要做什麼、怎麼把問題拆小，以及一份行動清單。",
+  },
+];
+
 const transferSections: ReportSection[] = [
   {
     title: "第一章｜你正站在轉站口",
@@ -309,6 +327,32 @@ function buildTransferSectionPrompt(payload: ClaimRequest, section: ReportSectio
   ].join("\n");
 }
 
+function buildRouteSectionPrompt(payload: ClaimRequest, section: ReportSection, index: number) {
+  const { passengerSummary, chartSummary } = buildContext(payload);
+
+  return [
+    "你是第 13 月台 Destiny Archive 的命運檔案撰寫者。",
+    "這是 980 單程路線報告，請寫成短版但完整的命理小說式解析，不是免費預覽，也不是簡短摘要。",
+    "報告要根據三叉分析：八字命盤傾向、西洋星盤訊號、使用者提出的問題。",
+    "語氣要準、細膩、有畫面感，但要讓使用者看得懂。每段都要有白話說明與實際提醒。",
+    "不要出現「內容輸出白話」這種標籤。不要說資料不足。不要要求使用者補資料；若資料不完整，就根據已有資料做保守推論。",
+    `目前章節：${section.title}`,
+    `本章目標字數：約 ${section.words} 字，請寫足內容，不要只列點。`,
+    `本章分析重點：${section.focus}`,
+    "",
+    "乘客資料：",
+    passengerSummary,
+    "",
+    "已計算的星盤與命盤摘要：",
+    chartSummary,
+    "",
+    "免費預覽資料：",
+    JSON.stringify(payload.preview ?? {}),
+    "",
+    `請只輸出第 ${index + 1} 章正文，章節標題用「${section.title}」。`,
+  ].join("\n");
+}
+
 async function requestOpenAIReport(prompt: string, maxOutputTokens: number) {
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) return "";
@@ -370,6 +414,38 @@ async function generateArchiveReport(payload: ClaimRequest) {
   ].join("\n\n");
 }
 
+async function generateRouteReport(payload: ClaimRequest) {
+  const sections: string[] = [];
+
+  for (const [index, section] of routeSections.entries()) {
+    const prompt = buildRouteSectionPrompt(payload, section, index);
+    const text = await requestOpenAIReport(prompt, 2200);
+    if (text) sections.push(text);
+  }
+
+  if (sections.length < Math.ceil(routeSections.length / 2)) {
+    return renderFallbackReport(payload);
+  }
+
+  const plan = getPlan(payload.productId);
+  const { passengerSummary, chartSummary } = buildContext(payload);
+
+  return [
+    "第 13 月台 Destiny Archive",
+    plan.name,
+    "",
+    "乘客資料",
+    passengerSummary,
+    "",
+    "三叉分析摘要",
+    chartSummary,
+    "",
+    "────────────────",
+    "",
+    ...sections,
+  ].join("\n\n");
+}
+
 async function generateTransferReport(payload: ClaimRequest) {
   const sections: string[] = [];
 
@@ -416,6 +492,10 @@ async function generateReport(payload: ClaimRequest) {
     return generateTransferReport(payload);
   }
 
+  if ((payload.productId ?? "route") === "route") {
+    return generateRouteReport(payload);
+  }
+
   const text = await requestOpenAIReport(buildPrompt(payload), plan.maxOutputTokens);
   return text || renderFallbackReport(payload);
 }
@@ -424,6 +504,60 @@ function makeFilename(payload: ClaimRequest) {
   const passengerName = clean(payload.passenger?.name).replace(/[\\/:*?"<>|\s]+/g, "_") || "passenger";
   const plan = getPlan(payload.productId);
   return `第13月台_${plan.name}_${passengerName}.txt`;
+}
+
+function shouldSendIntroFirst(productId?: ProductId) {
+  return productId === "transfer" || productId === "archive";
+}
+
+async function sendIntroWithResend(to: string, subject: string, payload: ClaimRequest) {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) return { sent: false, reason: "missing_resend_key" };
+
+  const plan = getPlan(payload.productId);
+  const passenger = payload.passenger ?? {};
+  const from = process.env.REPORT_FROM_EMAIL || "第 13 月台 <onboarding@resend.dev>";
+  const text = [
+    "你的第 13 月台班次已經受理。",
+    "",
+    `方案：${plan.name}`,
+    `價格：${plan.paidPrice}`,
+    `收件信箱：${to}`,
+    "",
+    "乘客資料",
+    `姓名：${clean(passenger.name) || "未填寫"}`,
+    `生日：${clean(passenger.birth) || "未填寫"}`,
+    `出生時間：${passenger.unknownTime ? "不知道時間" : clean(passenger.time) || "未填寫"}`,
+    `出生地：${clean(passenger.birthplace) || "未填寫"}`,
+    `目前問題：${clean(passenger.concern) || "未填寫"}`,
+    "",
+    "列車長凜正在整理你的完整命運檔案。",
+    "這一份報告字數較長，會分段完成分析。",
+    "待完整內容製作完成後，你會再收到第二封信，內含完整報告與 TXT 附件。",
+    "",
+    "你不需要重新送出資料，也不需要重複操作。",
+  ].join("\n");
+
+  const response = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      from,
+      to,
+      subject,
+      text,
+    }),
+  });
+
+  if (!response.ok) {
+    const body = await response.text();
+    throw new Error(body || "intro email delivery failed");
+  }
+
+  return { sent: true };
 }
 
 async function sendWithResend(to: string, subject: string, report: string, payload: ClaimRequest) {
@@ -481,11 +615,44 @@ async function sendWithResend(to: string, subject: string, report: string, paylo
   return { sent: true };
 }
 
+async function generateAndSendFullReport(recipient: string, subject: string, payload: ClaimRequest) {
+  const report = await generateReport(payload);
+  return sendWithResend(recipient, subject, report, payload);
+}
+
 export async function POST(request: Request) {
   try {
     const payload = (await request.json().catch(() => ({}))) as ClaimRequest;
     const recipient = clean(payload.recipientEmail) || fallbackRecipient;
     const plan = getPlan(payload.productId);
+    const introPassengerName = clean(payload.passenger?.name) || "乘客";
+
+    if (shouldSendIntroFirst(payload.productId)) {
+      const introSubject = `第 13 月台｜你的班次已受理｜${introPassengerName}`;
+      const fullSubject = `第 13 月台｜${plan.name}｜${introPassengerName}`;
+      const introResult = await sendIntroWithResend(recipient, introSubject, payload);
+
+      if (!introResult.sent) {
+        return Response.json(
+          {
+            sent: false,
+            message: "尚未設定 Resend 郵件金鑰，無法寄出受理通知。",
+            reason: introResult.reason,
+          },
+          { status: 503 },
+        );
+      }
+
+      void generateAndSendFullReport(recipient, fullSubject, payload).catch((error) => {
+        console.error("Full report background delivery failed.", error);
+      });
+
+      return Response.json({
+        sent: true,
+        queued: true,
+        message: "已先寄出班次受理通知。完整報告製作完成後，會再寄出第二封信。",
+      });
+    }
     const passengerName = clean(payload.passenger?.name) || "乘客";
     const subject = `第 13 月台｜${plan.name}｜${passengerName}`;
     const report = await generateReport(payload);
