@@ -1109,9 +1109,9 @@ export default function Home() {
             </article>
             <article className="story-panel story-insert" style={{ backgroundImage: "url('/comic/story/18-sealed-archive-book.png')" }}>
               <div className="story-copy lower insert-copy">
-                <span>封存頁</span>
-                <h2>免費預覽，到這裡剛好。</h2>
-                <p>後面的頁面，不會自己打開。</p>
+                <span>未開封頁</span>
+                <h2>後面的班次，已經鎖上。</h2>
+                <p>除非你親手決定，繼續查下去。</p>
               </div>
             </article>
             <article className="story-panel book-panel" style={{ backgroundImage: "url('/comic/story/11-if-not-change.png')" }}>
