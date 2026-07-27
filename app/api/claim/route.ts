@@ -133,22 +133,34 @@ function renderFallbackReport(payload: ClaimRequest) {
 function buildPrompt(payload: ClaimRequest) {
   const passenger = payload.passenger ?? {};
   const plan = getPlan(payload.productId);
+  const passengerSummary = [
+    `姓名：${clean(passenger.name) || "未填"}`,
+    `生日：${clean(passenger.birth) || "未填"}`,
+    `出生時間：${passenger.unknownTime ? "不知道時間" : clean(passenger.time) || "未填"}`,
+    `出生地：${clean(passenger.birthplace) || "未填"}`,
+    `用戶目前最想逃開的問題：${clean(passenger.concern) || "未填"}`,
+  ].join("\n");
+  const chartSummary = payload.chartDisplay?.summary?.length
+    ? payload.chartDisplay.summary.join(" / ")
+    : "星盤摘要暫無前端資料，請依姓名生日時間出生地做可讀性解讀。";
 
   return [
     "你是第 13 月台 Destiny Archive 的命運檔案撰寫者。",
     "請用小說式但清楚可讀的繁體中文，根據八字命盤、西洋星盤與用戶問題，輸出完整命運報告。",
     `方案：${plan.name}，價格：${plan.paidPrice}，目標字數約 ${plan.targetWords} 字。`,
-    "報告結構：開場、八字分析、星盤分析、用戶問題、三叉結論、具體建議。",
-    "若命盤資料不足，請明確說明這是目前資料下的解讀，不要假裝精準。",
+    "重要規則：下方乘客資料已經是有效輸入。禁止寫「尚未提供資料」「資料不足無法分析」「請補齊資料」這類句子。",
+    "若沒有完整天文曆或八字排盤細節，請以已提供的生日、時間、出生地、前端星盤摘要與用戶問題，寫成目前版本的命運報告。",
+    "報告結構：開場、乘客資料確認、八字傾向、西洋星盤傾向、用戶問題解析、三叉分析、具體建議、下一站提醒。",
+    "文字風格：像一本命運小說，但每一段都要有白話解釋，讓用戶覺得內容有落地、能對照自己。",
     "",
     "乘客資料：",
-    JSON.stringify(passenger),
+    passengerSummary,
+    "",
+    "星盤摘要：",
+    chartSummary,
     "",
     "免費預覽資料：",
     JSON.stringify(payload.preview ?? {}),
-    "",
-    "星盤顯示資料：",
-    JSON.stringify(payload.chartDisplay ?? {}),
   ].join("\n");
 }
 
@@ -196,12 +208,20 @@ async function sendWithResend(to: string, subject: string, report: string, paylo
   if (!apiKey) return { sent: false, reason: "missing_resend_key" };
 
   const plan = getPlan(payload.productId);
+  const passenger = payload.passenger ?? {};
   const from = process.env.REPORT_FROM_EMAIL || "第 13 月台 <onboarding@resend.dev>";
   const text = [
     "你的第 13 月台命運檔案已建立。",
     "",
     `方案：${plan.name}`,
     `價格：${plan.paidPrice}`,
+    "",
+    "本次收到的資料：",
+    `姓名：${clean(passenger.name) || "未填"}`,
+    `生日：${clean(passenger.birth) || "未填"}`,
+    `時間：${passenger.unknownTime ? "不知道時間" : clean(passenger.time) || "未填"}`,
+    `出生地：${clean(passenger.birthplace) || "未填"}`,
+    `問題：${clean(passenger.concern) || "未填"}`,
     "",
     "完整報告如下，附件也保留一份 TXT 檔案。",
     "",
