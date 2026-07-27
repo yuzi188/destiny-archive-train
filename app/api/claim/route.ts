@@ -59,7 +59,46 @@ const reportPlans: Record<ProductId, { name: string; paidPrice: string; targetWo
   },
 };
 
-const archiveSections = [
+type ReportSection = {
+  title: string;
+  words: number;
+  focus: string;
+};
+
+const transferSections: ReportSection[] = [
+  {
+    title: "第一章｜你正站在轉站口",
+    words: 900,
+    focus: "以乘客資料、出生時間地點與當前問題建立故事入口，說明這份報告不是泛用描述，而是從八字、西洋星盤與用戶問題交會後展開。",
+  },
+  {
+    title: "第二章｜你帶上車的慣性",
+    words: 1100,
+    focus: "解析使用者在人生中反覆出現的責任模式、壓力來源、做決定時的慣性，以及為什麼常常看似有方向卻仍覺得被困住。",
+  },
+  {
+    title: "第三章｜合作裡的暗號",
+    words: 1200,
+    focus: "聚焦職涯與合作班次，說明適合的工作節奏、合作對象、容易踩雷的溝通方式、什麼人會消耗他，什麼人會推動他。",
+  },
+  {
+    title: "第四章｜關係裡的避雷時刻",
+    words: 1100,
+    focus: "解析感情、人際、家庭或親密關係中的觸發點、界線問題、靠近與後退的時機，並給出可執行提醒。",
+  },
+  {
+    title: "第五章｜三條線交會的真正卡點",
+    words: 1400,
+    focus: "把八字、西洋星盤、用戶最近想逃開的問題整合成三叉分析，指出目前真正卡住的位置，以及它不是單一事件，而是長期命運慣性的結果。",
+  },
+  {
+    title: "第六章｜下一班車的選擇清單",
+    words: 1300,
+    focus: "給出未來 30 到 90 天的具體行動建議，包含職涯、合作、關係、個人界線與決策順序，讓報告具有可落地的方向感。",
+  },
+];
+
+const archiveSections: ReportSection[] = [
   {
     title: "第一章｜命運檔案與乘客資料",
     words: 900,
@@ -243,6 +282,33 @@ function buildArchiveSectionPrompt(payload: ClaimRequest, section: (typeof archi
   ].join("\n");
 }
 
+function buildTransferSectionPrompt(payload: ClaimRequest, section: ReportSection, index: number) {
+  const { passengerSummary, chartSummary } = buildContext(payload);
+
+  return [
+    "你是第 13 月台 Destiny Archive 的命運檔案撰寫者。",
+    "這是 1580 轉站套組的完整報告，不是免費預覽，也不是簡短摘要。",
+    "請用小說式命理解析風格撰寫：像列車長翻開命運檔案，一邊帶讀者看見自己的慣性，一邊給出具體可執行的提醒。",
+    "報告必須根據三叉分析：八字命盤傾向、西洋星盤訊號、使用者提出的問題。不要只寫星座，也不要只寫心理雞湯。",
+    "語氣要準、細膩、有畫面感，但不要恐嚇。每段都要有白話解釋，讓使用者知道這句話對現實生活代表什麼。",
+    "不要出現「內容輸出白話」這種標籤。不要說資料不足。不要要求使用者補資料；若資料不完整，就根據已有資料做保守推論。",
+    `目前章節：${section.title}`,
+    `本章目標字數：約 ${section.words} 字，請寫足內容，不要只列點。`,
+    `本章分析重點：${section.focus}`,
+    "",
+    "乘客資料：",
+    passengerSummary,
+    "",
+    "已計算的星盤與命盤摘要：",
+    chartSummary,
+    "",
+    "免費預覽資料：",
+    JSON.stringify(payload.preview ?? {}),
+    "",
+    `請只輸出第 ${index + 1} 章正文，章節標題用「${section.title}」。`,
+  ].join("\n");
+}
+
 async function requestOpenAIReport(prompt: string, maxOutputTokens: number) {
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) return "";
@@ -304,6 +370,38 @@ async function generateArchiveReport(payload: ClaimRequest) {
   ].join("\n\n");
 }
 
+async function generateTransferReport(payload: ClaimRequest) {
+  const sections: string[] = [];
+
+  for (const [index, section] of transferSections.entries()) {
+    const prompt = buildTransferSectionPrompt(payload, section, index);
+    const text = await requestOpenAIReport(prompt, 2400);
+    if (text) sections.push(text);
+  }
+
+  if (sections.length < Math.ceil(transferSections.length / 2)) {
+    return renderFallbackReport(payload);
+  }
+
+  const plan = getPlan(payload.productId);
+  const { passengerSummary, chartSummary } = buildContext(payload);
+
+  return [
+    "第 13 月台 Destiny Archive",
+    plan.name,
+    "",
+    "乘客資料",
+    passengerSummary,
+    "",
+    "三叉分析摘要",
+    chartSummary,
+    "",
+    "────────────────",
+    "",
+    ...sections,
+  ].join("\n\n");
+}
+
 async function generateReport(payload: ClaimRequest) {
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) return renderFallbackReport(payload);
@@ -312,6 +410,10 @@ async function generateReport(payload: ClaimRequest) {
 
   if ((payload.productId ?? "archive") === "archive") {
     return generateArchiveReport(payload);
+  }
+
+  if (payload.productId === "transfer") {
+    return generateTransferReport(payload);
   }
 
   const text = await requestOpenAIReport(buildPrompt(payload), plan.maxOutputTokens);
