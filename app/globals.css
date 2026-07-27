@@ -980,9 +980,9 @@ input:focus {
 
 .cover-page dl {
   position: absolute;
-  left: 42%;
+  left: 37%;
   top: 49%;
-  width: min(50vw, 260px);
+  width: min(46vw, 238px);
   display: grid;
   gap: 11px;
   margin: 0;
@@ -991,8 +991,8 @@ input:focus {
 
 .cover-page div {
   display: grid;
-  grid-template-columns: minmax(76px, 90px) minmax(0, 1fr);
-  gap: 8px;
+  grid-template-columns: minmax(68px, 82px) minmax(0, 1fr);
+  gap: 7px;
   text-align: left;
   align-items: baseline;
 }
@@ -1012,7 +1012,7 @@ input:focus {
   line-height: 1.28;
   min-width: 0;
   overflow-wrap: anywhere;
-  text-align: left;
+  text-align: center;
 }
 
 .cover-page p {
