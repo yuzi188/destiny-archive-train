@@ -65,6 +65,40 @@ type ReportSection = {
   focus: string;
 };
 
+const routeStoryLine = [
+  "故事線定位：一張單程票被打開，使用者先看見自己目前最明顯、最容易被命運辨識的那一面。",
+  "閱讀節奏：不要展開過多支線，先把一個核心問題講清楚，讓使用者覺得被命中。",
+  "分析順序：外在呈現 → 反覆停靠的卡點 → 30 天內可以先做的第一個調整。",
+  "輸出效果：像列車長先給一張路線提示，不揭露全部班次，但要讓使用者拿到可執行方向。",
+];
+
+const transferStoryLine = [
+  "故事線定位：使用者來到轉站口，手上不是終點票，而是一份關於職涯、合作與關係避雷的轉乘指引。",
+  "閱讀節奏：先指出慣性，再指出合作與關係中的觸發點，最後把三叉分析收束成下一步選擇。",
+  "分析順序：目前站點 → 舊慣性 → 合作暗號 → 關係避雷 → 三叉卡點 → 90 天轉站行動。",
+  "輸出效果：比單程票更具策略感，讓使用者知道該換哪條線、避開哪種人、先處理哪種選擇。",
+];
+
+const archiveStoryLine = [
+  "故事線定位：完整班次表被解封，使用者看到的不只是下一站，而是人生路線、金錢、關係、職涯與未來轉折。",
+  "閱讀節奏：像一本完整命運小說，先建立檔案，再逐章揭露內在性格、反覆命題、三叉分析與未來清單。",
+  "分析順序：乘客檔案 → 內在行李 → 性格倒影 → 星盤訊號 → 三叉交會 → 關係與職涯 → 未來風險 → 改變路線 → 行動清單。",
+  "輸出效果：要有完整收藏感，像使用者真的收到一份可以反覆閱讀的命運檔案。",
+];
+
+function withStoryLine(prompt: string, storyLine: string[]) {
+  return [
+    "請先遵守以下固定故事線，再根據本章要求生成內容。",
+    ...storyLine,
+    "",
+    "重要規則：故事線只用來控制結構與節奏，不要逐字照抄。",
+    "重要規則：每一章都要接續同一個列車命運檔案世界觀，不要變成普通命理文章。",
+    "重要規則：輸出要直接進入正文，不要解釋你正在套用模板。",
+    "",
+    prompt,
+  ].join("\n");
+}
+
 const routeSections: ReportSection[] = [
   {
     title: "第一章｜被看見的那一面",
@@ -383,13 +417,13 @@ async function requestOpenAIReport(prompt: string, maxOutputTokens: number) {
 }
 
 async function generateArchiveReport(payload: ClaimRequest) {
-  const sections: string[] = [];
-
-  for (const [index, section] of archiveSections.entries()) {
-    const prompt = buildArchiveSectionPrompt(payload, section, index);
-    const text = await requestOpenAIReport(prompt, 2600);
-    if (text) sections.push(text);
-  }
+  const generatedSections = await Promise.all(
+    archiveSections.map(async (section, index) => {
+      const prompt = withStoryLine(buildArchiveSectionPrompt(payload, section, index), archiveStoryLine);
+      return requestOpenAIReport(prompt, 2600);
+    }),
+  );
+  const sections = generatedSections.filter(Boolean);
 
   if (sections.length < Math.ceil(archiveSections.length / 2)) {
     return renderFallbackReport(payload);
@@ -415,13 +449,13 @@ async function generateArchiveReport(payload: ClaimRequest) {
 }
 
 async function generateRouteReport(payload: ClaimRequest) {
-  const sections: string[] = [];
-
-  for (const [index, section] of routeSections.entries()) {
-    const prompt = buildRouteSectionPrompt(payload, section, index);
-    const text = await requestOpenAIReport(prompt, 2200);
-    if (text) sections.push(text);
-  }
+  const generatedSections = await Promise.all(
+    routeSections.map(async (section, index) => {
+      const prompt = withStoryLine(buildRouteSectionPrompt(payload, section, index), routeStoryLine);
+      return requestOpenAIReport(prompt, 2200);
+    }),
+  );
+  const sections = generatedSections.filter(Boolean);
 
   if (sections.length < Math.ceil(routeSections.length / 2)) {
     return renderFallbackReport(payload);
@@ -447,13 +481,13 @@ async function generateRouteReport(payload: ClaimRequest) {
 }
 
 async function generateTransferReport(payload: ClaimRequest) {
-  const sections: string[] = [];
-
-  for (const [index, section] of transferSections.entries()) {
-    const prompt = buildTransferSectionPrompt(payload, section, index);
-    const text = await requestOpenAIReport(prompt, 2400);
-    if (text) sections.push(text);
-  }
+  const generatedSections = await Promise.all(
+    transferSections.map(async (section, index) => {
+      const prompt = withStoryLine(buildTransferSectionPrompt(payload, section, index), transferStoryLine);
+      return requestOpenAIReport(prompt, 2400);
+    }),
+  );
+  const sections = generatedSections.filter(Boolean);
 
   if (sections.length < Math.ceil(transferSections.length / 2)) {
     return renderFallbackReport(payload);
