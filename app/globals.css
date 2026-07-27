@@ -1091,6 +1091,13 @@ input:focus {
   font-size: 21px;
 }
 
+.report-page span {
+  color: #b3312b;
+  text-shadow:
+    0 1px 0 rgba(255, 232, 178, 0.22),
+    0 0 14px rgba(124, 18, 14, 0.22);
+}
+
 .report-page strong {
   display: block;
   margin: 0 auto 10px;
