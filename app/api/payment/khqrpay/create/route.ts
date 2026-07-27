@@ -1,3 +1,5 @@
+import { createHash } from "node:crypto";
+
 type PaymentRequest = {
   productId?: "route" | "transfer" | "archive";
 };
@@ -6,6 +8,12 @@ const pricesUsd = {
   route: "1.00",
   transfer: "49.00",
   archive: "59.00",
+} as const;
+
+const productNames = {
+  route: "Route Preview",
+  transfer: "Transfer Reading",
+  archive: "Full Destiny Archive",
 } as const;
 
 function clean(value: unknown) {
@@ -39,12 +47,15 @@ export async function POST(request: Request) {
   const transactionId = `ABA-${Date.now()}-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
   const origin = getPublicOrigin(request);
   const successUrl = `${origin}/?khqr_tx=${encodeURIComponent(transactionId)}`;
-  const checkoutUrl = new URL(`https://checkout.khqr.cc/payment/smmv2/${profileId}`);
-  checkoutUrl.searchParams.set("amount", amount);
-  checkoutUrl.searchParams.set("min", "1");
-  checkoutUrl.searchParams.set("max", "1000");
+  const remark = productNames[productId];
+  const hash = createHash("sha1").update(secretKey + transactionId + amount + successUrl + remark).digest("hex");
+  const checkoutUrl = new URL(`https://khqr.cc/api/payment/requestv2/${profileId}`);
+
   checkoutUrl.searchParams.set("transaction_id", transactionId);
+  checkoutUrl.searchParams.set("amount", amount);
   checkoutUrl.searchParams.set("success_url", successUrl);
+  checkoutUrl.searchParams.set("remark", remark);
+  checkoutUrl.searchParams.set("hash", hash);
 
   return Response.json({
     checkoutUrl: checkoutUrl.toString(),
