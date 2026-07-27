@@ -1,4 +1,4 @@
-import postgres from "postgres";
+import { Pool, type QueryResultRow } from "pg";
 
 export type ClaimJobStatus = "queued" | "generating" | "sent" | "error";
 
@@ -25,7 +25,7 @@ type CreateClaimJobInput = Pick<ClaimJob, "productId" | "planName" | "recipient"
 
 declare global {
   var __destinyClaimJobs: Map<string, ClaimJob> | undefined;
-  var __destinyClaimSql: postgres.Sql | undefined;
+  var __destinyClaimPool: Pool | undefined;
   var __destinyClaimDbReady: Promise<void> | undefined;
 }
 
@@ -44,50 +44,58 @@ function memoryStore() {
   return globalThis.__destinyClaimJobs;
 }
 
-function getSql() {
+function getPool() {
   const databaseUrl = process.env.DATABASE_URL;
   if (!databaseUrl) return undefined;
 
-  if (!globalThis.__destinyClaimSql) {
-    globalThis.__destinyClaimSql = postgres(databaseUrl, {
+  if (!globalThis.__destinyClaimPool) {
+    globalThis.__destinyClaimPool = new Pool({
+      connectionString: databaseUrl,
       max: 3,
-      prepare: false,
-      ssl: databaseUrl.includes("sslmode=require") ? "require" : undefined,
+      ssl: databaseUrl.includes("sslmode=require") ? { rejectUnauthorized: false } : undefined,
     });
   }
 
-  return globalThis.__destinyClaimSql;
+  return globalThis.__destinyClaimPool;
 }
 
 async function ensureDb() {
-  const sql = getSql();
-  if (!sql) return undefined;
+  const pool = getPool();
+  if (!pool) return undefined;
 
   if (!globalThis.__destinyClaimDbReady) {
-    globalThis.__destinyClaimDbReady = sql`
-      create table if not exists claim_jobs (
-        id text primary key,
-        status text not null,
-        product_id text,
-        plan_name text,
-        recipient text not null,
-        passenger_name text not null,
-        message text not null,
-        error text,
-        payload_json jsonb,
-        full_subject text,
-        created_at timestamptz not null,
-        updated_at timestamptz not null,
-        completed_at timestamptz
-      )
-    `.then(() => undefined);
+    globalThis.__destinyClaimDbReady = pool
+      .query(`
+        create table if not exists claim_jobs (
+          id text primary key,
+          status text not null,
+          product_id text,
+          plan_name text,
+          recipient text not null,
+          passenger_name text not null,
+          message text not null,
+          error text,
+          payload_json jsonb,
+          full_subject text,
+          created_at timestamptz not null,
+          updated_at timestamptz not null,
+          completed_at timestamptz
+        )
+      `)
+      .then(() => undefined);
   }
 
   await globalThis.__destinyClaimDbReady;
-  return sql;
+  return pool;
 }
 
-function rowToJob(row: Record<string, unknown>): ClaimJob {
+function dateToIso(value: unknown) {
+  if (!value) return undefined;
+  if (value instanceof Date) return value.toISOString();
+  return String(value);
+}
+
+function rowToJob(row: QueryResultRow): ClaimJob {
   return {
     id: String(row.id),
     status: row.status as ClaimJobStatus,
@@ -99,9 +107,9 @@ function rowToJob(row: Record<string, unknown>): ClaimJob {
     error: typeof row.error === "string" ? row.error : undefined,
     payload: row.payload_json,
     fullSubject: typeof row.full_subject === "string" ? row.full_subject : undefined,
-    createdAt: row.created_at instanceof Date ? row.created_at.toISOString() : String(row.created_at),
-    updatedAt: row.updated_at instanceof Date ? row.updated_at.toISOString() : String(row.updated_at),
-    completedAt: row.completed_at instanceof Date ? row.completed_at.toISOString() : undefined,
+    createdAt: dateToIso(row.created_at) || now(),
+    updatedAt: dateToIso(row.updated_at) || now(),
+    completedAt: dateToIso(row.completed_at),
   };
 }
 
@@ -116,24 +124,34 @@ export async function createClaimJob(input: CreateClaimJobInput) {
     ...input,
   };
 
-  const sql = await ensureDb();
-  if (!sql) {
+  const pool = await ensureDb();
+  if (!pool) {
     memoryStore().set(job.id, job);
     return job;
   }
 
-  await sql`
-    insert into claim_jobs (
-      id, status, product_id, plan_name, recipient, passenger_name, message,
-      payload_json, full_subject, created_at, updated_at
-    )
-    values (
-      ${job.id}, ${job.status}, ${job.productId ?? null}, ${job.planName ?? null},
-      ${job.recipient}, ${job.passengerName}, ${job.message},
-      ${job.payload ? sql.json(job.payload) : null}, ${job.fullSubject ?? null},
-      ${job.createdAt}, ${job.updatedAt}
-    )
-  `;
+  await pool.query(
+    `
+      insert into claim_jobs (
+        id, status, product_id, plan_name, recipient, passenger_name, message,
+        payload_json, full_subject, created_at, updated_at
+      )
+      values ($1, $2, $3, $4, $5, $6, $7, $8::jsonb, $9, $10, $11)
+    `,
+    [
+      job.id,
+      job.status,
+      job.productId ?? null,
+      job.planName ?? null,
+      job.recipient,
+      job.passengerName,
+      job.message,
+      job.payload ? JSON.stringify(job.payload) : null,
+      job.fullSubject ?? null,
+      job.createdAt,
+      job.updatedAt,
+    ],
+  );
 
   return job;
 }
@@ -141,9 +159,9 @@ export async function createClaimJob(input: CreateClaimJobInput) {
 export async function updateClaimJob(id: string, patch: Partial<Omit<ClaimJob, "id" | "createdAt">>) {
   const updatedAt = now();
   const completedAt = patch.status === "sent" || patch.status === "error" ? updatedAt : patch.completedAt;
-  const sql = await ensureDb();
+  const pool = await ensureDb();
 
-  if (!sql) {
+  if (!pool) {
     const jobs = memoryStore();
     const current = jobs.get(id);
     if (!current) return undefined;
@@ -157,48 +175,54 @@ export async function updateClaimJob(id: string, patch: Partial<Omit<ClaimJob, "
     return next;
   }
 
-  const rows = await sql`
-    update claim_jobs
-    set
-      status = coalesce(${patch.status ?? null}, status),
-      plan_name = coalesce(${patch.planName ?? null}, plan_name),
-      recipient = coalesce(${patch.recipient ?? null}, recipient),
-      passenger_name = coalesce(${patch.passengerName ?? null}, passenger_name),
-      message = coalesce(${patch.message ?? null}, message),
-      error = ${patch.error ?? null},
-      payload_json = coalesce(${patch.payload ? sql.json(patch.payload) : null}, payload_json),
-      full_subject = coalesce(${patch.fullSubject ?? null}, full_subject),
-      updated_at = ${updatedAt},
-      completed_at = coalesce(${completedAt ?? null}, completed_at)
-    where id = ${id}
-    returning *
-  `;
+  const sets: string[] = ["updated_at = $1"];
+  const values: unknown[] = [updatedAt];
 
-  return rows[0] ? rowToJob(rows[0]) : undefined;
+  function setField(column: string, value: unknown) {
+    values.push(value);
+    sets.push(`${column} = $${values.length}`);
+  }
+
+  if (patch.status !== undefined) setField("status", patch.status);
+  if (patch.planName !== undefined) setField("plan_name", patch.planName);
+  if (patch.recipient !== undefined) setField("recipient", patch.recipient);
+  if (patch.passengerName !== undefined) setField("passenger_name", patch.passengerName);
+  if (patch.message !== undefined) setField("message", patch.message);
+  if (patch.error !== undefined) setField("error", patch.error);
+  if (patch.payload !== undefined) setField("payload_json", patch.payload ? JSON.stringify(patch.payload) : null);
+  if (patch.fullSubject !== undefined) setField("full_subject", patch.fullSubject);
+  if (completedAt !== undefined) setField("completed_at", completedAt);
+
+  values.push(id);
+  const result = await pool.query(
+    `
+      update claim_jobs
+      set ${sets.join(", ")}
+      where id = $${values.length}
+      returning *
+    `,
+    values,
+  );
+
+  return result.rows[0] ? rowToJob(result.rows[0]) : undefined;
 }
 
 export async function getClaimJob(id: string) {
-  const sql = await ensureDb();
-  if (!sql) return memoryStore().get(id);
+  const pool = await ensureDb();
+  if (!pool) return memoryStore().get(id);
 
-  const rows = await sql`select * from claim_jobs where id = ${id} limit 1`;
-  return rows[0] ? rowToJob(rows[0]) : undefined;
+  const result = await pool.query("select * from claim_jobs where id = $1 limit 1", [id]);
+  return result.rows[0] ? rowToJob(result.rows[0]) : undefined;
 }
 
 export async function listClaimJobs(limit = 100) {
-  const sql = await ensureDb();
-  if (!sql) {
+  const pool = await ensureDb();
+  if (!pool) {
     return [...memoryStore().values()]
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
       .slice(0, limit);
   }
 
-  const rows = await sql`
-    select *
-    from claim_jobs
-    order by created_at desc
-    limit ${limit}
-  `;
-
-  return rows.map(rowToJob);
+  const result = await pool.query("select * from claim_jobs order by created_at desc limit $1", [limit]);
+  return result.rows.map(rowToJob);
 }
