@@ -31,12 +31,12 @@ export async function POST(request: Request) {
   const payload = (await request.json()) as PaymentRequest;
   const productId = payload.productId && payload.productId in pricesUsd ? payload.productId : "archive";
   const amount = pricesUsd[productId];
-  const transactionId = `DTA-${Date.now()}-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
+  const transactionId = `ABA-${Date.now()}-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
   const origin = new URL(request.url).origin;
   const successUrl = `${origin}/?khqr_tx=${encodeURIComponent(transactionId)}`;
   const remark = productNames[productId];
   const hash = createHash("sha1").update(secretKey + transactionId + amount + successUrl + remark).digest("hex");
-  const checkoutUrl = new URL(`https://khqr.cc/api/payment/request/${profileId}`);
+  const checkoutUrl = new URL(`https://khqr.cc/api/payment/requestv2/${profileId}`);
 
   checkoutUrl.searchParams.set("transaction_id", transactionId);
   checkoutUrl.searchParams.set("amount", amount);
