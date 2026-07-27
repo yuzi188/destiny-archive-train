@@ -40,7 +40,8 @@ const statusColors: Record<ClaimJobStatus, string> = {
   error: "#ff6b62",
 };
 
-const tokenStorageKey = "destiny-admin-token";
+const userStorageKey = "destiny-admin-user";
+const passwordStorageKey = "destiny-admin-password";
 
 function formatDate(value?: string) {
   if (!value) return "尚未完成";
@@ -56,7 +57,8 @@ function formatDate(value?: string) {
 
 export default function AdminPage() {
   const [jobs, setJobs] = useState<ClaimJob[]>([]);
-  const [token, setToken] = useState("");
+  const [adminUser, setAdminUser] = useState("");
+  const [adminPassword, setAdminPassword] = useState("");
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
   const [database, setDatabase] = useState(false);
@@ -74,13 +76,19 @@ export default function AdminPage() {
     );
   }, [jobs]);
 
-  async function loadJobs(nextToken = token) {
+  async function loadJobs(nextUser = adminUser, nextPassword = adminPassword) {
     setLoading(true);
     setMessage("");
 
     try {
       const response = await fetch("/api/admin/claims?limit=150", {
-        headers: nextToken ? { "x-admin-token": nextToken } : undefined,
+        headers:
+          nextUser || nextPassword
+            ? {
+                "x-admin-user": nextUser,
+                "x-admin-password": nextPassword,
+              }
+            : undefined,
         cache: "no-store",
       });
       const data = (await response.json()) as AdminResponse;
@@ -102,25 +110,22 @@ export default function AdminPage() {
   }
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const urlToken = params.get("token") || "";
-    const savedToken = localStorage.getItem(tokenStorageKey) || "";
-    const initialToken = urlToken || savedToken;
+    const savedUser = localStorage.getItem(userStorageKey) || "";
+    const savedPassword = localStorage.getItem(passwordStorageKey) || "";
 
-    if (initialToken) {
-      setToken(initialToken);
-      localStorage.setItem(tokenStorageKey, initialToken);
-    }
+    if (savedUser) setAdminUser(savedUser);
+    if (savedPassword) setAdminPassword(savedPassword);
 
-    loadJobs(initialToken);
-    const timer = window.setInterval(() => loadJobs(initialToken), 30000);
+    loadJobs(savedUser, savedPassword);
+    const timer = window.setInterval(() => loadJobs(savedUser, savedPassword), 30000);
     return () => window.clearInterval(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  function saveToken() {
-    localStorage.setItem(tokenStorageKey, token);
-    loadJobs(token);
+  function saveLogin() {
+    localStorage.setItem(userStorageKey, adminUser);
+    localStorage.setItem(passwordStorageKey, adminPassword);
+    loadJobs(adminUser, adminPassword);
   }
 
   return (
@@ -143,24 +148,32 @@ export default function AdminPage() {
             {database ? "資料庫已連上，訂單會保留。" : "尚未連到資料庫，目前只會保留在伺服器記憶體。"}
           </p>
           <span style={isProtected ? styles.goodDot : styles.warnDot} />
-          <p style={styles.noticeText}>
-            {isProtected ? "後台已上鎖。" : "尚未設定 ADMIN_TOKEN，公開網址可讀後台。"}
-          </p>
+          <p style={styles.noticeText}>{isProtected ? "後台已上鎖。" : "尚未設定後台帳密，公開網址可讀後台。"}</p>
         </section>
 
-        <section style={styles.tokenPanel}>
-          <label style={styles.tokenLabel}>
+        <section style={styles.loginPanel}>
+          <label style={styles.loginLabel}>
+            後台帳號
+            <input
+              value={adminUser}
+              onChange={(event) => setAdminUser(event.target.value)}
+              placeholder="輸入後台帳號"
+              style={styles.input}
+              type="text"
+            />
+          </label>
+          <label style={styles.loginLabel}>
             後台密碼
             <input
-              value={token}
-              onChange={(event) => setToken(event.target.value)}
-              placeholder="Railway 設定 ADMIN_TOKEN 後填這裡"
+              value={adminPassword}
+              onChange={(event) => setAdminPassword(event.target.value)}
+              placeholder="輸入後台密碼"
               style={styles.input}
               type="password"
             />
           </label>
-          <button type="button" onClick={saveToken} style={styles.smallButton}>
-            套用
+          <button type="button" onClick={saveLogin} style={styles.smallButton}>
+            登入後台
           </button>
         </section>
 
@@ -180,9 +193,7 @@ export default function AdminPage() {
         </section>
 
         <section style={styles.jobList}>
-          {jobs.length === 0 && !loading ? (
-            <div style={styles.emptyState}>目前還沒有訂單資料。</div>
-          ) : null}
+          {jobs.length === 0 && !loading ? <div style={styles.emptyState}>目前還沒有訂單資料。</div> : null}
 
           {jobs.map((job) => (
             <article key={job.id} style={styles.jobCard}>
@@ -313,9 +324,9 @@ const styles: Record<string, React.CSSProperties> = {
     color: "#d9e2e1",
     fontSize: 13,
   },
-  tokenPanel: {
+  loginPanel: {
     display: "grid",
-    gridTemplateColumns: "1fr auto",
+    gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr)) auto",
     gap: 10,
     alignItems: "end",
     marginBottom: 18,
@@ -324,7 +335,7 @@ const styles: Record<string, React.CSSProperties> = {
     borderRadius: 8,
     background: "rgba(7, 8, 9, 0.42)",
   },
-  tokenLabel: {
+  loginLabel: {
     display: "grid",
     gap: 7,
     color: "#d8b36d",
