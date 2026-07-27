@@ -980,9 +980,9 @@ input:focus {
 
 .cover-page dl {
   position: absolute;
-  left: 37%;
+  left: 40%;
   top: 49%;
-  width: min(46vw, 238px);
+  width: min(42vw, 220px);
   display: grid;
   gap: 11px;
   margin: 0;
@@ -991,8 +991,8 @@ input:focus {
 
 .cover-page div {
   display: grid;
-  grid-template-columns: minmax(68px, 82px) minmax(0, 1fr);
-  gap: 7px;
+  grid-template-columns: minmax(58px, 72px) minmax(0, 1fr);
+  gap: 6px;
   text-align: left;
   align-items: baseline;
 }
@@ -1000,7 +1000,7 @@ input:focus {
 .cover-page dt {
   color: rgba(36, 27, 18, 0.42);
   font-family: var(--archive-title-font);
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 800;
   line-height: 1.25;
   text-transform: uppercase;
@@ -1008,11 +1008,12 @@ input:focus {
 
 .cover-page dd {
   margin: 0;
-  font-size: 15px;
+  font-size: 14px;
   line-height: 1.28;
   min-width: 0;
+  max-width: 100%;
   overflow-wrap: anywhere;
-  text-align: center;
+  text-align: left;
 }
 
 .cover-page p {
