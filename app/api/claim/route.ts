@@ -59,6 +59,54 @@ const reportPlans: Record<ProductId, { name: string; paidPrice: string; targetWo
   },
 };
 
+const archiveSections = [
+  {
+    title: "第一章｜命運檔案與乘客資料",
+    words: 900,
+    focus: "確認姓名、生日、時間、出生地與用戶問題，小說式開場，讓使用者知道這份報告是針對本人。",
+  },
+  {
+    title: "第二章｜八字底色：你先天習慣怎麼活",
+    words: 1200,
+    focus: "用生日時間出生地做八字傾向解讀，講人格底色、壓力反應、行動慣性，附白話例子。",
+  },
+  {
+    title: "第三章｜五行與能量流向",
+    words: 1100,
+    focus: "用五行語言解釋他的穩定、固執、承擔、焦慮、反覆思考，避免硬列命盤，重點是可讀的解釋。",
+  },
+  {
+    title: "第四章｜西洋星盤：太陽金牛、月亮處女、上升獅子",
+    words: 1300,
+    focus: "以太陽金牛、月亮處女、上升獅子分析外在形象、內在安全感、職涯節奏與關係需求。",
+  },
+  {
+    title: "第五章｜三叉分析：八字、星盤、問題交會處",
+    words: 1300,
+    focus: "把八字、西洋星盤、用戶問題合成一個核心命題，說明為何工作方向會成為當前卡點。",
+  },
+  {
+    title: "第六章｜關係與合作模式",
+    words: 1000,
+    focus: "分析他在人際、感情、合作裡容易承擔過多、想穩住局面、又不容易求助的模式。",
+  },
+  {
+    title: "第七章｜金錢與職涯路線",
+    words: 1200,
+    focus: "解析適合的賺錢模式、工作定位、職涯選擇、短期與中期方向，用具體建議呈現。",
+  },
+  {
+    title: "第八章｜如果不改，會重複的班次",
+    words: 900,
+    focus: "指出不調整時會重複的狀態：拖延選擇、過度承擔、對穩定的依賴、錯過機會。",
+  },
+  {
+    title: "第九章｜下一站行動清單",
+    words: 1100,
+    focus: "給 30 天行動建議、溝通建議、工作決策建議、每日提醒，收束成小說式結尾。",
+  },
+];
+
 function clean(value: unknown) {
   return typeof value === "string" ? value.trim() : "";
 }
@@ -130,9 +178,8 @@ function renderFallbackReport(payload: ClaimRequest) {
   return lines.join("\n");
 }
 
-function buildPrompt(payload: ClaimRequest) {
+function buildContext(payload: ClaimRequest) {
   const passenger = payload.passenger ?? {};
-  const plan = getPlan(payload.productId);
   const passengerSummary = [
     `姓名：${clean(passenger.name) || "未填"}`,
     `生日：${clean(passenger.birth) || "未填"}`,
@@ -143,6 +190,13 @@ function buildPrompt(payload: ClaimRequest) {
   const chartSummary = payload.chartDisplay?.summary?.length
     ? payload.chartDisplay.summary.join(" / ")
     : "星盤摘要暫無前端資料，請依姓名生日時間出生地做可讀性解讀。";
+
+  return { passengerSummary, chartSummary };
+}
+
+function buildPrompt(payload: ClaimRequest) {
+  const plan = getPlan(payload.productId);
+  const { passengerSummary, chartSummary } = buildContext(payload);
 
   return [
     "你是第 13 月台 Destiny Archive 的命運檔案撰寫者。",
@@ -164,14 +218,36 @@ function buildPrompt(payload: ClaimRequest) {
   ].join("\n");
 }
 
-async function generateReport(payload: ClaimRequest) {
+function buildArchiveSectionPrompt(payload: ClaimRequest, section: (typeof archiveSections)[number], index: number) {
+  const { passengerSummary, chartSummary } = buildContext(payload);
+
+  return [
+    "你是第 13 月台 Destiny Archive 的命運檔案撰寫者。",
+    "現在要撰寫 1980 方案「完整班次表」的一個章節。整份報告會由多個章節合併，所以這一章要完整、具體、可直接閱讀。",
+    "重要規則：下方乘客資料已經是有效輸入。禁止寫「尚未提供資料」「資料不足無法分析」「請補齊資料」這類句子。",
+    "文字風格：繁體中文、小說式命理報告，但每段都要接白話解釋。不要只寫抽象形容，要能讓用戶對照工作、關係、金錢與選擇。",
+    `本章標題：${section.title}`,
+    `本章目標字數：約 ${section.words} 字。請盡量寫足，不要過短。`,
+    `本章重點：${section.focus}`,
+    "",
+    "乘客資料：",
+    passengerSummary,
+    "",
+    "星盤摘要：",
+    chartSummary,
+    "",
+    "免費預覽資料：",
+    JSON.stringify(payload.preview ?? {}),
+    "",
+    `請輸出格式：先寫「${section.title}」，接著分成 4 到 7 個小段落。這是第 ${index + 1} 章，不要寫總結整份報告。`,
+  ].join("\n");
+}
+
+async function requestOpenAIReport(prompt: string, maxOutputTokens: number) {
   const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey) return renderFallbackReport(payload);
+  if (!apiKey) return "";
 
-  const plan = getPlan(payload.productId);
   const model = process.env.OPENAI_MODEL || "gpt-4.1-mini";
-  const prompt = buildPrompt(payload);
-
   try {
     const upstream = await fetch("https://api.openai.com/v1/responses", {
       method: "POST",
@@ -182,19 +258,64 @@ async function generateReport(payload: ClaimRequest) {
       body: JSON.stringify({
         model,
         input: [{ role: "user", content: [{ type: "input_text", text: prompt }] }],
-        max_output_tokens: plan.maxOutputTokens,
+        max_output_tokens: maxOutputTokens,
       }),
     });
 
     const result = await upstream.json();
     if (!upstream.ok) throw new Error(result?.error?.message || "OpenAI request failed");
 
-    const text = extractOutputText(result);
-    return text || renderFallbackReport(payload);
+    return extractOutputText(result);
   } catch (error) {
-    console.error("Report generation failed; using fallback report.", error);
+    console.error("Report generation failed.", error);
+    return "";
+  }
+}
+
+async function generateArchiveReport(payload: ClaimRequest) {
+  const sections: string[] = [];
+
+  for (const [index, section] of archiveSections.entries()) {
+    const prompt = buildArchiveSectionPrompt(payload, section, index);
+    const text = await requestOpenAIReport(prompt, 2600);
+    if (text) sections.push(text);
+  }
+
+  if (sections.length < Math.ceil(archiveSections.length / 2)) {
     return renderFallbackReport(payload);
   }
+
+  const plan = getPlan(payload.productId);
+  const { passengerSummary, chartSummary } = buildContext(payload);
+
+  return [
+    "第 13 月台 Destiny Archive",
+    plan.name,
+    "",
+    "本次收到的資料",
+    passengerSummary,
+    "",
+    "星盤摘要",
+    chartSummary,
+    "",
+    "────────────────",
+    "",
+    ...sections,
+  ].join("\n\n");
+}
+
+async function generateReport(payload: ClaimRequest) {
+  const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey) return renderFallbackReport(payload);
+
+  const plan = getPlan(payload.productId);
+
+  if ((payload.productId ?? "archive") === "archive") {
+    return generateArchiveReport(payload);
+  }
+
+  const text = await requestOpenAIReport(buildPrompt(payload), plan.maxOutputTokens);
+  return text || renderFallbackReport(payload);
 }
 
 function makeFilename(payload: ClaimRequest) {
