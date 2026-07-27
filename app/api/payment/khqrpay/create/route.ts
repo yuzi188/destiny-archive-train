@@ -5,7 +5,7 @@ type PaymentRequest = {
 };
 
 const pricesUsd = {
-  route: "29.00",
+  route: "0.39",
   transfer: "49.00",
   archive: "59.00",
 } as const;
