@@ -575,6 +575,8 @@ export default function Home() {
       });
       const claim = (await claimResponse.json()) as {
         sent?: boolean;
+        queued?: boolean;
+        jobId?: string;
         message?: string;
         error?: string;
       };
@@ -583,7 +585,7 @@ export default function Home() {
         throw new Error(claim.message || claim.error || "claim failed");
       }
 
-      setClaimStatus("sent");
+      setClaimStatus(claim.queued ? "pending" : "sent");
       setNotice(claim.message || "完整報告已寄出，請檢查信箱。");
       return;
     } catch {
