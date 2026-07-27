@@ -110,7 +110,7 @@ export async function createClaimJob(input: CreateClaimJobInput) {
   const job: ClaimJob = {
     id: makeJobId(),
     status: "queued",
-    message: "班次已受理，等待生成完整報告。",
+    message: "訂單已建立，等待生成完整報告。",
     createdAt,
     updatedAt: createdAt,
     ...input,
@@ -183,4 +183,22 @@ export async function getClaimJob(id: string) {
 
   const rows = await sql`select * from claim_jobs where id = ${id} limit 1`;
   return rows[0] ? rowToJob(rows[0]) : undefined;
+}
+
+export async function listClaimJobs(limit = 100) {
+  const sql = await ensureDb();
+  if (!sql) {
+    return [...memoryStore().values()]
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      .slice(0, limit);
+  }
+
+  const rows = await sql`
+    select *
+    from claim_jobs
+    order by created_at desc
+    limit ${limit}
+  `;
+
+  return rows.map(rowToJob);
 }
