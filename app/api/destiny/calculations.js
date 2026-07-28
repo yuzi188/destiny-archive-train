@@ -292,12 +292,9 @@ function buildNatalChartDisplay(planets, ascendant) {
     });
   }
 
-  const sun = planets.find((planet) => planet.key === "sun");
-  const moon = planets.find((planet) => planet.key === "moon");
-
   return {
-    title: "夜空座標預覽",
-    summary: [sun && `第一記號 ${sun.sign}`, moon && `內在記號 ${moon.sign}`, ascendant && `入口記號 ${ascendant.sign}`].filter(Boolean),
+    title: "班次已對上",
+    summary: ["你看起來比實際更穩。", "你在乎時反而更沉默。", "你需要先確認對方值不值得。"],
     wheel: {
       centerX: 50,
       centerY: 51,

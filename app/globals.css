@@ -801,6 +801,35 @@ input:focus {
   line-height: 1.55;
 }
 
+.micro-story {
+  min-height: clamp(330px, 54vh, 460px);
+  padding-top: 38px;
+  padding-bottom: 18px;
+}
+
+.micro-story::before {
+  background:
+    linear-gradient(180deg, rgba(5, 6, 7, 0.02), rgba(5, 6, 7, 0.18) 34%, rgba(5, 6, 7, 0.96)),
+    linear-gradient(90deg, rgba(5, 6, 7, 0.38), transparent 50%, rgba(5, 6, 7, 0.22));
+}
+
+.micro-story .insert-copy {
+  margin-bottom: 14px;
+}
+
+.micro-story .insert-copy h2 {
+  max-width: 390px;
+  margin-inline: auto;
+  font-size: 23px;
+  line-height: 1.32;
+}
+
+.micro-story .insert-copy p {
+  max-width: 350px;
+  font-size: 15px;
+  line-height: 1.58;
+}
+
 .book-panel {
   justify-content: flex-start;
   background-position: center top;

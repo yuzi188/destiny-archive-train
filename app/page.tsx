@@ -69,6 +69,13 @@ type NatalChartDisplay = {
   points: NatalChartPoint[];
 };
 
+type FreeStoryBeat = {
+  image: string;
+  kicker: string;
+  title: string;
+  lines: string[];
+};
+
 const videos = {
   opening: "/videos/01-opening.mp4",
   enter: "/videos/02-enter-carriage.mp4",
@@ -174,34 +181,34 @@ const fallbackDestinyPreview: DestinyPreview = {
   recordStatus: "已建立命運檔案",
   chapters: {
     seen: {
-      title: "第一頁｜你停下來的地方",
-      lines: ["第一張票底寫著承擔。", "夜空座標顯示你怕失控。", "你常先扛住場面再說累。"],
-      headline: "第一特徵：先行者",
+      title: "第一頁｜你不是沒有方向",
+      lines: ["你只是每次快靠近答案時，會先替自己找退路。", "不是因為你膽小，是因為你太清楚失望比失敗更難受。", "所以你看起來冷靜，其實只是先把情緒收起來。"],
+      headline: "你很早就學會先保護自己",
     },
     inner: {
       title: "第二頁｜你藏起來的反應",
-      lines: ["內在回聲顯示你很敏感。", "在乎時反而更沉默。", "越重視，越不敢吵。"],
+      lines: ["你表面很冷靜，但只要真的在乎，反而會變安靜。", "你不是沒話說，是在等對方證明他真的想聽。", "越重要的人，你越不敢隨便開口。"],
     },
     repeat: {
       title: "第三頁｜反覆經過的月台",
-      lines: ["責任車廂反覆亮燈。", "你常把自己排到後面。", "你太會替別人收尾。"],
+      lines: ["工作上你先承擔，關係裡你先忍耐。", "你常把自己的感受排到最後，還會說服自己沒關係。", "久了以後，你連想被照顧都會覺得不好意思。"],
     },
     blindSpot: {
       title: "第五頁｜你沒說出口的盲點",
-      headline: "你最大的敵人不是失敗",
-      lines: ["你最怕麻煩別人。", "問題卡在求援那一刻。", "你需要練習開口。"],
+      headline: "你最大的問題不是沒有能力",
+      lines: ["而是你太習慣自己解決。", "你會安慰別人，替別人收尾，卻不知道自己能跟誰說。", "你不是不需要人，你只是太怕開口後沒人接住。"],
     },
     future: {
       title: "第六頁｜如果不轉站",
-      lines: ["下一站會重播同一選擇。", "關係會先變得沉默。", "不說破，就會卡住。"],
-      headline: "機會會停在門外",
+      lines: ["你不一定會立刻失去什麼。", "但你會慢慢變成什麼都能處理，卻越來越不期待的人。", "真正危險的不是停下，是你開始覺得算了。"],
+      headline: "這才是最危險的地方",
     },
   },
   profile: {
-    title: "第四頁｜你的路線性質",
-    destinyType: "開路者",
-    triangulation: ["第一張票底指向承擔。", "夜空座標指向被看見。", "問題卡在同一個入口。"],
-    lines: ["三條線交會成一種走法。", "你要先替自己開路。"],
+    title: "第四頁｜你其實很會撐",
+    destinyType: "承擔型",
+    triangulation: ["你不是不累，只是很少讓人看見。", "你越在乎，越會先確認對方值不值得。", "你卡住的地方，通常都和不敢麻煩別人有關。"],
+    lines: ["你要練習的不是更強。", "是讓真正可靠的人靠近。"],
   },
   locked: {
     title: "後續章節已鎖住",
@@ -213,8 +220,8 @@ const fallbackDestinyPreview: DestinyPreview = {
 };
 
 const fallbackNatalChart: NatalChartDisplay = {
-  title: "夜空座標預覽",
-  summary: ["第一記號 獅子", "內在記號 摩羯", "入口記號 雙子"],
+  title: "班次已對上",
+  summary: ["你看起來比實際更穩。", "你在乎時反而更沉默。", "你需要先確認對方值不值得。"],
   points: [
     { key: "sun", symbol: "☉", sign: "獅子", degreeInSign: 5, x: 42, y: 41 },
     { key: "moon", symbol: "☽", sign: "摩羯", degreeInSign: 18, x: 29, y: 53 },
@@ -226,6 +233,83 @@ const fallbackNatalChart: NatalChartDisplay = {
     { key: "saturn", symbol: "♄", sign: "牡羊", degreeInSign: 27, x: 51, y: 35 },
   ],
 };
+
+const freeStoryBeats: FreeStoryBeat[] = [
+  {
+    image: "/comic/story/14-open-first-page.png",
+    kicker: "第一道裂縫",
+    title: "你說沒事的時候，通常才是真的有事。",
+    lines: ["你不是想被哄。", "你只是想確認，自己不是唯一在乎的人。"],
+  },
+  {
+    image: "/comic/story/15-rin-window-profile.png",
+    kicker: "窗邊倒影",
+    title: "你很會觀察別人，卻很少讓別人讀懂你。",
+    lines: ["你先看對方的語氣，再決定要不要說真話。", "這不是冷淡，是你怕交出去又被放下。"],
+  },
+  {
+    image: "/comic/story/16-pocket-watch-choice.png",
+    kicker: "懷錶停格",
+    title: "你不是拖延，你是在等一個不會後悔的時機。",
+    lines: ["可惜很多機會，不會等到你完全準備好。"],
+  },
+  {
+    image: "/comic/story/17-chart-lines-book.png",
+    kicker: "軌道亮起",
+    title: "你每次快要向前，都會先想到最壞的結果。",
+    lines: ["所以你不是沒勇氣。", "你只是太擅長提前替自己受傷。"],
+  },
+  {
+    image: "/comic/story/06-seen-you.png",
+    kicker: "被看見",
+    title: "你最怕的不是輸，是努力被當成理所當然。",
+    lines: ["你可以撐很久。", "但你其實一直在看，有沒有人會主動分擔。"],
+  },
+  {
+    image: "/comic/story/07-inner-you.png",
+    kicker: "沒有說出口",
+    title: "你不是不需要陪伴，你只是太怕自己變成負擔。",
+    lines: ["所以你常常把想說的話，改成一句算了。"],
+  },
+  {
+    image: "/comic/story/08-repeat-life.png",
+    kicker: "同一站",
+    title: "你總是在替別人收尾，卻很少替自己開始。",
+    lines: ["你不是沒有選擇。", "你只是太習慣先顧全局。"],
+  },
+  {
+    image: "/comic/story/10-blind-spot.png",
+    kicker: "盲點",
+    title: "你最容易心軟的地方，就是別人說他需要你。",
+    lines: ["你明知道會累，還是會先接住。", "因為你太懂被丟下的感覺。"],
+  },
+  {
+    image: "/comic/story/18-sealed-archive-book.png",
+    kicker: "封存頁",
+    title: "你其實知道答案，只是不想承認代價。",
+    lines: ["真正困住你的，不是選項。", "是你怕選了以後，就不能再回頭。"],
+  },
+  {
+    image: "/comic/story/12-locked-chapters.png",
+    kicker: "未開封的頁面",
+    title: "後面的內容，不會替你做決定。",
+    lines: ["它只會把你一直不敢看的地方，照得更清楚。"],
+  },
+];
+
+function StoryBeatPanel({ beat }: { beat: FreeStoryBeat }) {
+  return (
+    <article className="story-panel story-insert micro-story" style={{ backgroundImage: `url('${beat.image}')` }}>
+      <div className="story-copy lower insert-copy">
+        <span>{beat.kicker}</span>
+        <h2>{beat.title}</h2>
+        {beat.lines.map((line) => (
+          <p key={line}>{line}</p>
+        ))}
+      </div>
+    </article>
+  );
+}
 
 function StageVideo({
   src,
@@ -289,7 +373,7 @@ function LoadingAnalysisVideo({ src, soundEnabled }: { src: string; soundEnabled
 
 function NatalChartReveal({ chart }: { chart: NatalChartDisplay }) {
   return (
-    <div className="natal-reveal-still" aria-label="夜空座標預覽">
+    <div className="natal-reveal-still" aria-label="班次預覽">
       <img src="/comic/story/13-natal-chart-still.png" alt="" />
       <div className="natal-summary">
         <span>{chart.title}</span>
@@ -1035,6 +1119,9 @@ export default function Home() {
                 </dl>
               </div>
             </article>
+            {freeStoryBeats.slice(0, 2).map((beat) => (
+              <StoryBeatPanel key={beat.title} beat={beat} />
+            ))}
             <article className="story-panel story-insert" style={{ backgroundImage: "url('/comic/story/14-open-first-page.png')" }}>
               <div className="story-copy lower insert-copy">
                 <span>第一頁</span>
@@ -1051,6 +1138,9 @@ export default function Home() {
                 {destinyPreview.chapters.seen.headline && <strong>{destinyPreview.chapters.seen.headline}</strong>}
               </div>
             </article>
+            {freeStoryBeats.slice(2, 4).map((beat) => (
+              <StoryBeatPanel key={beat.title} beat={beat} />
+            ))}
             <article className="story-panel story-insert" style={{ backgroundImage: "url('/comic/story/15-rin-window-profile.png')" }}>
               <div className="story-copy lower insert-copy">
                 <span>窗邊回聲</span>
@@ -1066,6 +1156,9 @@ export default function Home() {
                 ))}
               </div>
             </article>
+            {freeStoryBeats.slice(4, 6).map((beat) => (
+              <StoryBeatPanel key={beat.title} beat={beat} />
+            ))}
             <article className="story-panel story-insert" style={{ backgroundImage: "url('/comic/story/16-pocket-watch-choice.png')" }}>
               <div className="story-copy lower insert-copy">
                 <span>懷錶停格</span>
@@ -1081,11 +1174,14 @@ export default function Home() {
                 ))}
               </div>
             </article>
+            {freeStoryBeats.slice(6, 8).map((beat) => (
+              <StoryBeatPanel key={beat.title} beat={beat} />
+            ))}
             <article className="story-panel story-insert" style={{ backgroundImage: "url('/comic/story/17-chart-lines-book.png')" }}>
               <div className="story-copy lower insert-copy">
-                <span>路線對軌</span>
+                <span>答案靠近</span>
                 <h2>這不是一句安慰。</h2>
-                <p>你的第一張票底，本來就留下這條軌道。</p>
+                <p>是你一直不敢承認的那個模式，終於被照出來。</p>
               </div>
             </article>
             <article className="story-panel book-panel aligned-book" style={{ backgroundImage: "url('/comic/story/09-destiny-profile.png')" }}>
@@ -1100,6 +1196,9 @@ export default function Home() {
                 ))}
               </div>
             </article>
+            {freeStoryBeats.slice(8, 10).map((beat) => (
+              <StoryBeatPanel key={beat.title} beat={beat} />
+            ))}
             <article className="story-panel" style={{ backgroundImage: "url('/comic/story/10-blind-spot.png')" }}>
               <div className="story-copy lower">
                 <span>{destinyPreview.chapters.blindSpot.title}</span>
