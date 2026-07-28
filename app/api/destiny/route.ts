@@ -141,6 +141,40 @@ function parseModelJson(outputText: string) {
   }
 }
 
+function sanitizePassengerFacingText(value: string) {
+  const replacements: Array<[RegExp, string]> = [
+    [/三叉分析/g, "三條線交會"],
+    [/八字命格/g, "路線性質"],
+    [/西洋星盤/g, "夜空座標"],
+    [/出生星盤/g, "夜空座標"],
+    [/八字/g, "第一張票底"],
+    [/星盤/g, "夜空座標"],
+    [/星座/g, "天空記號"],
+    [/命盤/g, "乘客檔案"],
+    [/五行/g, "能量氣候"],
+    [/流年/g, "下一站時間表"],
+    [/大運/g, "長線班次"],
+    [/十神/g, "關係座位"],
+    [/命理/g, "路線解析"],
+    [/太陽/g, "第一記號"],
+    [/月亮/g, "內在記號"],
+    [/上升/g, "入口記號"],
+  ];
+
+  return replacements.reduce((text, [pattern, replacement]) => text.replace(pattern, replacement), value);
+}
+
+function sanitizePassengerFacingJson<T>(value: T): T {
+  if (typeof value === "string") return sanitizePassengerFacingText(value) as T;
+  if (Array.isArray(value)) return value.map((item) => sanitizePassengerFacingJson(item)) as T;
+  if (value && typeof value === "object") {
+    return Object.fromEntries(
+      Object.entries(value).map(([key, child]) => [key, sanitizePassengerFacingJson(child)]),
+    ) as T;
+  }
+  return value;
+}
+
 export async function POST(request: Request) {
   const apiKey = process.env.OPENAI_API_KEY;
   const model = process.env.OPENAI_MODEL || "gpt-5.6";
@@ -177,17 +211,19 @@ export async function POST(request: Request) {
 
   const prompt = [
     "你是《第 13 月台》互動命運列車的書記官。",
-    "請根據後端已計算完成的八字與西洋星盤資料，產生免費預覽用的 Destiny Archive 書頁文案。",
+    "請根據後端已計算完成的專業資料，產生前台免費預覽用的 Destiny Archive 書頁文案。",
     "你不能重新推算盤面，也不能編造盤面；只能解讀 calculatedChart 裡的資料。",
     "乘客資料裡的 concern 是使用者親自選定的問題分類，必須直接納入解讀；不可寫問題未明、未提供、等待名字。",
-    "必須把八字與星盤融合：四柱/日主/五行/十神/命宮，加上太陽/月亮/內行星落座。時間明確時可使用上升星座；若時間未知，不要提上升。",
-    "第四章 profile 不要輸出能力條。請用「三叉分析」文字呈現：八字命格、星盤人格、使用者問題三者交叉，最後歸類為 5 種命格之一。",
-    "5 種命格只能從這五個選：開路者、守夜者、承擔者、轉譯者、重啟者。destinyType 必須是其中之一，triangulation 三句分別對應八字、星盤、問題，lines 說明為什麼命中。",
+    "內部可以融合出生資料、夜空座標、第一張票底與使用者問題，但輸出給前台時必須全部轉成第 13 月台世界觀語言。",
+    "禁用詞非常重要：所有輸出欄位不得出現「八字、星盤、星座、命盤、五行、流年、大運、十神、命理、三叉分析」這些字。",
+    "替換規則：八字/命盤改成第一張票底、出生軌跡、乘客檔案；星盤/星座改成夜空座標、天空記號、星軌；五行改成能量氣候或性格溫度；流年/大運改成下一站時間表或長線班次；三叉分析改成三條線交會或路線對軌。",
+    "第四頁 profile 不要輸出能力條。請用「三條線交會」文字呈現：出生軌跡、夜空座標、使用者問題三者交叉，最後歸類為 5 種路線性質之一。",
+    "5 種路線性質只能從這五個選：開路者、守夜者、承擔者、轉譯者、重啟者。destinyType 必須是其中之一，triangulation 三句分別對應第一張票底、夜空座標、問題入口，lines 說明為什麼命中。",
     "風格：繁體中文、神祕、高級、像小說揭露，不恐怖，不要提 AI、GPT。",
-    "解析要具體：每頁至少有一句要指到實際盤面或使用者問題，例如日主、五行偏向、十神傾向、太陽/月亮/上升、或 concern 對應的行為模式。",
+    "解析要具體：每頁至少有一句要指到實際資料或使用者問題，但必須用列車世界觀說法呈現，例如第一張票底、夜空座標、入口記號、反覆停靠的月台、或 concern 對應的行為模式。",
     "不要只寫抽象安慰，例如『你很敏感』『你很努力』；要寫成『你在壓力來時會先接住別人的期待』這種可感覺命中的句子。",
-    "每一章 lines 必須保留原本命理/星盤判讀，再追加白話註解。格式固定為：前 2 句是盤面判讀，最後 1 句是生活化白話補充，但不要加「白話：」這種標籤。",
-    "白話註解要把盤面翻成生活行為，例如『你常先扛再說累』，不可重複前一句。",
+    "每一章 lines 格式固定：前 2 句是列車世界觀判讀，最後 1 句是生活化白話補充，但不要加「白話：」這種標籤。",
+    "白話註解要把判讀翻成生活行為，例如『你常先扛再說累』，不可重複前一句。",
     "限制：這是娛樂/自我反思內容，不要做醫療、法律、投資、保證命運的斷言。",
     "字數規則非常重要：title 最多 14 字，headline 最多 20 字，一般 lines 固定 3 句，每句最多 22 個中文字。",
     "有 headline 的章節也必須輸出 3 句 lines，其中第 3 句是生活化白話補充，不要加標籤。",
@@ -265,7 +301,10 @@ export async function POST(request: Request) {
   }
 
   try {
-    return Response.json({ preview: parseModelJson(outputText), chartDisplay: calculatedChart.astrology.display });
+    return Response.json({
+      preview: sanitizePassengerFacingJson(parseModelJson(outputText)),
+      chartDisplay: sanitizePassengerFacingJson(calculatedChart.astrology.display),
+    });
   } catch {
     return Response.json({ error: "model returned invalid JSON" }, { status: 502 });
   }

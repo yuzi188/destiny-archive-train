@@ -110,7 +110,7 @@ export function calculateDestinyChart(input) {
 
   return {
     precision: {
-      time: time.approximate ? "出生時間未知，以中午 12:00 建立不含上升的星盤" : "使用使用者輸入的出生時間",
+      time: time.approximate ? "時間未指定，以中午 12:00 建立保守座標" : "使用使用者輸入的時間",
       location: location.matched ? `出生地匹配：${location.name}` : "出生地未完整匹配，使用台北作為預設座標",
       timezone: `UTC${location.timezone >= 0 ? "+" : ""}${location.timezone}`,
     },
@@ -296,8 +296,8 @@ function buildNatalChartDisplay(planets, ascendant) {
   const moon = planets.find((planet) => planet.key === "moon");
 
   return {
-    title: "出生星盤預覽",
-    summary: [sun && `太陽 ${sun.sign}`, moon && `月亮 ${moon.sign}`, ascendant && `上升 ${ascendant.sign}`].filter(Boolean),
+    title: "夜空座標預覽",
+    summary: [sun && `第一記號 ${sun.sign}`, moon && `內在記號 ${moon.sign}`, ascendant && `入口記號 ${ascendant.sign}`].filter(Boolean),
     wheel: {
       centerX: 50,
       centerY: 51,

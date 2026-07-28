@@ -174,34 +174,34 @@ const fallbackDestinyPreview: DestinyPreview = {
   recordStatus: "已建立命運檔案",
   chapters: {
     seen: {
-      title: "第一章｜我看到的你",
-      lines: ["八字看見你先承擔。", "星盤看見你怕失控。", "白話：你常先扛再說累。"],
+      title: "第一頁｜你停下來的地方",
+      lines: ["第一張票底寫著承擔。", "夜空座標顯示你怕失控。", "你常先扛住場面再說累。"],
       headline: "第一特徵：先行者",
     },
     inner: {
-      title: "第二章｜真正的你",
-      lines: ["月亮顯示你內心敏感。", "在乎時反而更沉默。", "白話：越重視越不敢吵。"],
+      title: "第二頁｜你藏起來的反應",
+      lines: ["內在回聲顯示你很敏感。", "在乎時反而更沉默。", "越重視，越不敢吵。"],
     },
     repeat: {
-      title: "第三章｜一直重複的人生",
-      lines: ["責任宮位反覆被觸動。", "你常把自己排到後面。", "白話：你太會替人收尾。"],
+      title: "第三頁｜反覆經過的月台",
+      lines: ["責任車廂反覆亮燈。", "你常把自己排到後面。", "你太會替別人收尾。"],
     },
     blindSpot: {
-      title: "第五章｜你的盲點",
+      title: "第五頁｜你沒說出口的盲點",
       headline: "你最大的敵人不是失敗",
-      lines: ["十神顯示你怕麻煩別人。", "問題卡在求援那一刻。", "白話：你需要練習開口。"],
+      lines: ["你最怕麻煩別人。", "問題卡在求援那一刻。", "你需要練習開口。"],
     },
     future: {
-      title: "第六章｜如果不改",
-      lines: ["流年會重播同一選擇。", "關係會先變得沉默。", "白話：不說破就會卡住。"],
+      title: "第六頁｜如果不轉站",
+      lines: ["下一站會重播同一選擇。", "關係會先變得沉默。", "不說破，就會卡住。"],
       headline: "機會會停在門外",
     },
   },
   profile: {
-    title: "第四章｜你的命格",
+    title: "第四頁｜你的路線性質",
     destinyType: "開路者",
-    triangulation: ["八字指向先承擔再求援。", "星盤指向需要被看見。", "問題卡在同一個選擇口。"],
-    lines: ["三條線交會成同一命格。", "白話：你要先替自己開路。"],
+    triangulation: ["第一張票底指向承擔。", "夜空座標指向被看見。", "問題卡在同一個入口。"],
+    lines: ["三條線交會成一種走法。", "你要先替自己開路。"],
   },
   locked: {
     title: "後續章節已鎖住",
@@ -213,8 +213,8 @@ const fallbackDestinyPreview: DestinyPreview = {
 };
 
 const fallbackNatalChart: NatalChartDisplay = {
-  title: "出生星盤預覽",
-  summary: ["太陽 獅子", "月亮 摩羯", "上升 雙子"],
+  title: "夜空座標預覽",
+  summary: ["第一記號 獅子", "內在記號 摩羯", "入口記號 雙子"],
   points: [
     { key: "sun", symbol: "☉", sign: "獅子", degreeInSign: 5, x: 42, y: 41 },
     { key: "moon", symbol: "☽", sign: "摩羯", degreeInSign: 18, x: 29, y: 53 },
@@ -289,7 +289,7 @@ function LoadingAnalysisVideo({ src, soundEnabled }: { src: string; soundEnabled
 
 function NatalChartReveal({ chart }: { chart: NatalChartDisplay }) {
   return (
-    <div className="natal-reveal-still" aria-label="出生星盤預覽">
+    <div className="natal-reveal-still" aria-label="夜空座標預覽">
       <img src="/comic/story/13-natal-chart-still.png" alt="" />
       <div className="natal-summary">
         <span>{chart.title}</span>
@@ -1083,9 +1083,9 @@ export default function Home() {
             </article>
             <article className="story-panel story-insert" style={{ backgroundImage: "url('/comic/story/17-chart-lines-book.png')" }}>
               <div className="story-copy lower insert-copy">
-                <span>命盤對軌</span>
+                <span>路線對軌</span>
                 <h2>這不是一句安慰。</h2>
-                <p>你的盤裡，本來就有這條軌道。</p>
+                <p>你的第一張票底，本來就留下這條軌道。</p>
               </div>
             </article>
             <article className="story-panel book-panel aligned-book" style={{ backgroundImage: "url('/comic/story/09-destiny-profile.png')" }}>
@@ -1180,7 +1180,7 @@ export default function Home() {
                 ×
               </button>
               <h2 id="checkout-title">完整班次表</h2>
-              <p id="checkout-desc">選擇班次後使用 KHQR 掃碼付款。付款完成後，完整命運檔案會寄到你的信箱。</p>
+              <p id="checkout-desc">選擇班次後使用 KHQR 掃碼付款。付款完成後，完整班次檔案會寄到你的信箱。</p>
               <div className="product-list">
                 {productEntries.map(([id, product]) => (
                   <button

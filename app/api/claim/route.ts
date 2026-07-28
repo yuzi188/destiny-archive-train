@@ -77,16 +77,16 @@ const routeStoryLine = [
 
 const transferStoryLine = [
   "故事線定位：使用者來到轉站口，手上不是終點票，而是一份關於職涯、合作與關係避雷的轉乘指引。",
-  "閱讀節奏：先指出慣性，再指出合作與關係中的觸發點，最後把三叉分析收束成下一步選擇。",
-  "分析順序：目前站點 → 舊慣性 → 合作暗號 → 關係避雷 → 三叉卡點 → 90 天轉站行動。",
+  "閱讀節奏：先指出慣性，再指出合作與關係中的觸發點，最後把三條線交會收束成下一步選擇。",
+  "分析順序：目前站點 → 舊慣性 → 合作暗號 → 關係避雷 → 路線卡點 → 90 天轉站行動。",
   "弱點規則：必須分別指出職涯合作弱點、關係互動缺點、情緒盲點，並說明哪種人或情境會放大這些問題。",
   "輸出效果：比單程票更具策略感，讓使用者知道該換哪條線、避開哪種人、先處理哪種選擇。",
 ];
 
 const archiveStoryLine = [
   "故事線定位：完整班次表被解封，使用者看到的不只是下一站，而是人生路線、金錢、關係、職涯與未來轉折。",
-  "閱讀節奏：像一本完整命運小說，先建立檔案，再逐章揭露內在性格、反覆命題、三叉分析與未來清單。",
-  "分析順序：乘客檔案 → 內在行李 → 性格倒影 → 星盤訊號 → 三叉交會 → 關係與職涯 → 未來風險 → 改變路線 → 行動清單。",
+  "閱讀節奏：像一本完整班次小說，先建立檔案，再逐章揭露內在性格、反覆命題、三條線交會與未來清單。",
+  "分析順序：乘客檔案 → 內在行李 → 性格倒影 → 夜空訊號 → 路線交會 → 關係與職涯 → 未來風險 → 改變路線 → 行動清單。",
   "弱點規則：必須完整揭露性格弱點、感情盲點、金錢缺口、職涯瓶頸、人際缺點，以及如果不改會反覆失去什麼。",
   "輸出效果：要有完整收藏感，像使用者真的收到一份可以反覆閱讀的命運檔案。",
 ];
@@ -97,7 +97,7 @@ function withStoryLine(prompt: string, storyLine: string[]) {
     ...storyLine,
     "",
     "重要規則：故事線只用來控制結構與節奏，不要逐字照抄。",
-    "重要規則：每一章都要接續同一個列車命運檔案世界觀，不要變成普通命理文章。",
+    "重要規則：每一章都要接續同一個列車班次檔案世界觀，不要變成普通解析文章。",
     "重要規則：弱點、缺點、盲點要具體、可對應生活情境；語氣要像冷靜提醒，不要羞辱、恐嚇或責罵使用者。",
     "重要規則：指出弱點後一定要補上白話解釋與改善方向，避免只有負面判斷。",
     "重要規則：輸出要直接進入正文，不要解釋你正在套用模板。",
@@ -110,7 +110,7 @@ const routeSections: ReportSection[] = [
   {
     title: "第一章｜被看見的那一面",
     words: 900,
-    focus: "用八字與星盤摘要切入，說明使用者外在呈現、做事方式、被別人看見的第一印象，以及這些特質如何影響當前問題。加入一個最容易被忽略的表面弱點。",
+    focus: "用第一張票底與夜空座標切入，說明使用者外在呈現、做事方式、被別人看見的第一印象，以及這些特質如何影響當前問題。加入一個最容易被忽略的表面弱點。",
   },
   {
     title: "第二章｜反覆停靠的那一站",
@@ -128,7 +128,7 @@ const transferSections: ReportSection[] = [
   {
     title: "第一章｜你正站在轉站口",
     words: 900,
-    focus: "以乘客資料、出生時間地點與當前問題建立故事入口，說明這份報告不是泛用描述，而是從八字、西洋星盤與用戶問題交會後展開。",
+    focus: "以乘客資料、出生時間地點與當前問題建立故事入口，說明這份報告不是泛用描述，而是從出生軌跡、夜空座標與用戶問題交會後展開。",
   },
   {
     title: "第二章｜你帶上車的慣性",
@@ -148,7 +148,7 @@ const transferSections: ReportSection[] = [
   {
     title: "第五章｜三條線交會的真正卡點",
     words: 1400,
-    focus: "把八字、西洋星盤、用戶最近想逃開的問題整合成三叉分析，指出目前真正卡住的位置，以及它不是單一事件，而是長期命運慣性的結果。收束出一個最核心的缺點與一個最需要修正的盲點。",
+    focus: "把第一張票底、夜空座標、用戶最近想逃開的問題整合成三條線交會，指出目前真正卡住的位置，以及它不是單一事件，而是長期慣性的結果。收束出一個最核心的缺點與一個最需要修正的盲點。",
   },
   {
     title: "第六章｜下一班車的選擇清單",
@@ -159,29 +159,29 @@ const transferSections: ReportSection[] = [
 
 const archiveSections: ReportSection[] = [
   {
-    title: "第一章｜命運檔案與乘客資料",
+    title: "第一章｜乘客檔案與第一張票",
     words: 900,
     focus: "確認姓名、生日、時間、出生地與用戶問題，小說式開場，讓使用者知道這份報告是針對本人。",
   },
   {
     title: "第二章｜你一直帶著上車的行李",
     words: 1200,
-    focus: "用生日時間出生地做八字傾向解讀，講人格底色、壓力反應、行動慣性，附白話例子。",
+    focus: "用生日時間出生地做出生軌跡解讀，講人格底色、壓力反應、行動慣性，附白話例子。",
   },
   {
     title: "第三章｜車窗倒映出的真正性格",
     words: 1100,
-    focus: "用五行語言解釋他的穩定、固執、承擔、焦慮、反覆思考，避免硬列命盤，重點是可讀的解釋。",
+    focus: "用能量氣候語言解釋他的穩定、固執、承擔、焦慮、反覆思考，避免硬列資料，重點是可讀的解釋。",
   },
   {
     title: "第四章｜夜空寫下的三個訊號",
     words: 1300,
-    focus: "以太陽金牛、月亮處女、上升獅子分析外在形象、內在安全感、職涯節奏與關係需求。",
+    focus: "以第一記號、內在記號、入口記號分析外在形象、內在安全感、職涯節奏與關係需求。",
   },
   {
-    title: "第五章｜三叉分析：八字、星盤、問題交會處",
+    title: "第五章｜三條線交會的地方",
     words: 1300,
-    focus: "把八字、西洋星盤、用戶問題合成一個核心命題，說明為何工作方向會成為當前卡點。",
+    focus: "把第一張票底、夜空座標、用戶問題合成一個核心命題，說明為何工作方向會成為當前卡點。",
   },
   {
     title: "第六章｜你總是坐在靠窗的位置",
@@ -231,6 +231,29 @@ function extractOutputText(result: unknown) {
   );
 }
 
+function sanitizePassengerFacingText(value: string) {
+  const replacements: Array<[RegExp, string]> = [
+    [/三叉分析/g, "三條線交會"],
+    [/八字命格/g, "路線性質"],
+    [/西洋星盤/g, "夜空座標"],
+    [/出生星盤/g, "夜空座標"],
+    [/八字/g, "第一張票底"],
+    [/星盤/g, "夜空座標"],
+    [/星座/g, "天空記號"],
+    [/命盤/g, "乘客檔案"],
+    [/五行/g, "能量氣候"],
+    [/流年/g, "下一站時間表"],
+    [/大運/g, "長線班次"],
+    [/十神/g, "關係座位"],
+    [/命理/g, "路線解析"],
+    [/太陽/g, "第一記號"],
+    [/月亮/g, "內在記號"],
+    [/上升/g, "入口記號"],
+  ];
+
+  return replacements.reduce((text, [pattern, replacement]) => text.replace(pattern, replacement), value);
+}
+
 function renderFallbackReport(payload: ClaimRequest) {
   const passenger = payload.passenger ?? {};
   const plan = getPlan(payload.productId);
@@ -252,12 +275,12 @@ function renderFallbackReport(payload: ClaimRequest) {
     `出生地：${clean(passenger.birthplace) || "未填"}`,
     `正在逃開的問題：${clean(passenger.concern) || "未填"}`,
     "",
-    "三叉分析摘要",
-    `八字命格：${profile?.destinyType || "等待完整推算"}`,
-    `星盤摘要：${chart?.summary?.join(" / ") || "等待完整推算"}`,
+    "路線交會摘要",
+    `路線性質：${profile?.destinyType || "等待完整調度"}`,
+    `夜空座標：${chart?.summary?.join(" / ") || "等待完整調度"}`,
     `用戶問題：${clean(passenger.concern) || "未填"}`,
     "",
-    "免費預覽內容",
+    "已翻開的前幾頁",
   ];
 
   Object.values(chapters).forEach((chapter) => {
@@ -271,7 +294,7 @@ function renderFallbackReport(payload: ClaimRequest) {
   lines.push("");
   lines.push("測試說明");
   lines.push("這是一封用來確認寄信流程的測試報告。若你收到此信，代表 Resend 寄信、附件、收件信箱都已成功串接。");
-  lines.push("正式付款開通後，這裡會改為依照用戶八字命盤、西洋星盤與問題產生對應字數的小說式完整報告。");
+  lines.push("正式付款開通後，這裡會改為依照用戶第一張票底、夜空座標與問題產生對應字數的小說式完整班次表。");
 
   return lines.join("\n");
 }
@@ -287,7 +310,7 @@ function buildContext(payload: ClaimRequest) {
   ].join("\n");
   const chartSummary = payload.chartDisplay?.summary?.length
     ? payload.chartDisplay.summary.join(" / ")
-    : "星盤摘要暫無前端資料，請依姓名生日時間出生地做可讀性解讀。";
+    : "夜空座標暫無前端資料，請依姓名生日時間出生地做可讀性解讀。";
 
   return { passengerSummary, chartSummary };
 }
@@ -298,20 +321,21 @@ function buildPrompt(payload: ClaimRequest) {
 
   return [
     "你是第 13 月台 Destiny Archive 的命運檔案撰寫者。",
-    "請用小說式但清楚可讀的繁體中文，根據八字命盤、西洋星盤與用戶問題，輸出完整命運報告。",
+    "請用小說式但清楚可讀的繁體中文，根據第一張票底、夜空座標與用戶問題，輸出完整班次表。",
     `方案：${plan.name}，價格：${plan.paidPrice}，目標字數約 ${plan.targetWords} 字。`,
     "重要規則：下方乘客資料已經是有效輸入。禁止寫「尚未提供資料」「資料不足無法分析」「請補齊資料」這類句子。",
-    "若沒有完整天文曆或八字排盤細節，請以已提供的生日、時間、出生地、前端星盤摘要與用戶問題，寫成目前版本的命運報告。",
-    "報告結構：開場、乘客資料確認、八字傾向、西洋星盤傾向、用戶問題解析、三叉分析、具體建議、下一站提醒。",
-    "文字風格：像一本命運小說，但每一段都要有白話解釋，讓用戶覺得內容有落地、能對照自己。",
+    "後端已把專業資料整理成可讀摘要。你可以使用這些資料，但輸出時不得出現禁用詞。",
+    "禁用詞：八字、星盤、星座、命盤、五行、流年、大運、十神、命理、三叉分析。請改用第 13 月台語言。",
+    "報告結構：開場、乘客資料確認、第一張票底、夜空座標、用戶問題解析、三條線交會、具體建議、下一站提醒。",
+    "文字風格：像一本班次小說，但每一段都要有白話解釋，讓用戶覺得內容有落地、能對照自己。",
     "",
     "乘客資料：",
     passengerSummary,
     "",
-    "星盤摘要：",
+    "夜空座標：",
     chartSummary,
     "",
-    "免費預覽資料：",
+    "已翻開的前幾頁：",
     JSON.stringify(payload.preview ?? {}),
   ].join("\n");
 }
@@ -323,7 +347,8 @@ function buildArchiveSectionPrompt(payload: ClaimRequest, section: (typeof archi
     "你是第 13 月台 Destiny Archive 的命運檔案撰寫者。",
     "現在要撰寫 1980 方案「完整班次表」的一個章節。整份報告會由多個章節合併，所以這一章要完整、具體、可直接閱讀。",
     "重要規則：下方乘客資料已經是有效輸入。禁止寫「尚未提供資料」「資料不足無法分析」「請補齊資料」這類句子。",
-    "文字風格：繁體中文、小說式命理報告，但每段都要接白話解釋。不要只寫抽象形容，要能讓用戶對照工作、關係、金錢與選擇。",
+    "文字風格：繁體中文、小說式班次檔案，但每段都要接白話解釋。不要只寫抽象形容，要能讓用戶對照工作、關係、金錢與選擇。",
+    "禁用詞：八字、星盤、星座、命盤、五行、流年、大運、十神、命理、三叉分析。請改用第一張票底、夜空座標、能量氣候、下一站時間表、三條線交會等說法。",
     `本章標題：${section.title}`,
     `本章目標字數：約 ${section.words} 字。請盡量寫足，不要過短。`,
     `本章重點：${section.focus}`,
@@ -331,10 +356,10 @@ function buildArchiveSectionPrompt(payload: ClaimRequest, section: (typeof archi
     "乘客資料：",
     passengerSummary,
     "",
-    "星盤摘要：",
+    "夜空座標：",
     chartSummary,
     "",
-    "免費預覽資料：",
+    "已翻開的前幾頁：",
     JSON.stringify(payload.preview ?? {}),
     "",
     `請輸出格式：先寫「${section.title}」，接著分成 4 到 7 個小段落。這是第 ${index + 1} 章，不要寫總結整份報告。`,
@@ -346,10 +371,11 @@ function buildTransferSectionPrompt(payload: ClaimRequest, section: ReportSectio
 
   return [
     "你是第 13 月台 Destiny Archive 的命運檔案撰寫者。",
-    "這是 1580 轉站套組的完整報告，不是免費預覽，也不是簡短摘要。",
-    "請用小說式命理解析風格撰寫：像列車長翻開命運檔案，一邊帶讀者看見自己的慣性，一邊給出具體可執行的提醒。",
-    "報告必須根據三叉分析：八字命盤傾向、西洋星盤訊號、使用者提出的問題。不要只寫星座，也不要只寫心理雞湯。",
+    "這是 1580 轉站套組的完整班次表，不是前幾頁，也不是簡短摘要。",
+    "請用小說式班次解析風格撰寫：像列車長翻開命運檔案，一邊帶讀者看見自己的慣性，一邊給出具體可執行的提醒。",
+    "報告必須根據三條線交會：第一張票底、夜空座標、使用者提出的問題。不要只寫心理雞湯。",
     "語氣要準、細膩、有畫面感，但不要恐嚇。每段都要有白話解釋，讓使用者知道這句話對現實生活代表什麼。",
+    "禁用詞：八字、星盤、星座、命盤、五行、流年、大運、十神、命理、三叉分析。請全部轉成第 13 月台世界觀語言。",
     "不要出現「內容輸出白話」這種標籤。不要說資料不足。不要要求使用者補資料；若資料不完整，就根據已有資料做保守推論。",
     `目前章節：${section.title}`,
     `本章目標字數：約 ${section.words} 字，請寫足內容，不要只列點。`,
@@ -358,10 +384,10 @@ function buildTransferSectionPrompt(payload: ClaimRequest, section: ReportSectio
     "乘客資料：",
     passengerSummary,
     "",
-    "已計算的星盤與命盤摘要：",
+    "已調度的夜空座標與路線摘要：",
     chartSummary,
     "",
-    "免費預覽資料：",
+    "已翻開的前幾頁：",
     JSON.stringify(payload.preview ?? {}),
     "",
     `請只輸出第 ${index + 1} 章正文，章節標題用「${section.title}」。`,
@@ -373,9 +399,10 @@ function buildRouteSectionPrompt(payload: ClaimRequest, section: ReportSection, 
 
   return [
     "你是第 13 月台 Destiny Archive 的命運檔案撰寫者。",
-    "這是 980 單程路線報告，請寫成短版但完整的命理小說式解析，不是免費預覽，也不是簡短摘要。",
-    "報告要根據三叉分析：八字命盤傾向、西洋星盤訊號、使用者提出的問題。",
+    "這是 980 單程路線報告，請寫成短版但完整的小說式路線解析，不是前幾頁，也不是簡短摘要。",
+    "報告要根據三條線交會：第一張票底、夜空座標、使用者提出的問題。",
     "語氣要準、細膩、有畫面感，但要讓使用者看得懂。每段都要有白話說明與實際提醒。",
+    "禁用詞：八字、星盤、星座、命盤、五行、流年、大運、十神、命理、三叉分析。請全部轉成第 13 月台世界觀語言。",
     "不要出現「內容輸出白話」這種標籤。不要說資料不足。不要要求使用者補資料；若資料不完整，就根據已有資料做保守推論。",
     `目前章節：${section.title}`,
     `本章目標字數：約 ${section.words} 字，請寫足內容，不要只列點。`,
@@ -384,10 +411,10 @@ function buildRouteSectionPrompt(payload: ClaimRequest, section: ReportSection, 
     "乘客資料：",
     passengerSummary,
     "",
-    "已計算的星盤與命盤摘要：",
+    "已調度的夜空座標與路線摘要：",
     chartSummary,
     "",
-    "免費預覽資料：",
+    "已翻開的前幾頁：",
     JSON.stringify(payload.preview ?? {}),
     "",
     `請只輸出第 ${index + 1} 章正文，章節標題用「${section.title}」。`,
@@ -446,7 +473,7 @@ async function generateArchiveReport(payload: ClaimRequest) {
     "本次收到的資料",
     passengerSummary,
     "",
-    "星盤摘要",
+    "夜空座標",
     chartSummary,
     "",
     "────────────────",
@@ -478,7 +505,7 @@ async function generateRouteReport(payload: ClaimRequest) {
     "乘客資料",
     passengerSummary,
     "",
-    "三叉分析摘要",
+    "路線交會摘要",
     chartSummary,
     "",
     "────────────────",
@@ -510,7 +537,7 @@ async function generateTransferReport(payload: ClaimRequest) {
     "乘客資料",
     passengerSummary,
     "",
-    "三叉分析摘要",
+    "路線交會摘要",
     chartSummary,
     "",
     "────────────────",
@@ -572,7 +599,7 @@ async function sendIntroWithResend(to: string, subject: string, payload: ClaimRe
     `出生地：${clean(passenger.birthplace) || "未填寫"}`,
     `目前問題：${clean(passenger.concern) || "未填寫"}`,
     "",
-    "列車長凜正在整理你的完整命運檔案。",
+    "列車長凜正在整理你的完整班次檔案。",
     "這一份報告字數較長，會分段完成分析。",
     "待完整內容製作完成後，你會再收到第二封信，內含完整報告與 TXT 附件。",
     "",
@@ -657,7 +684,7 @@ async function sendWithResend(to: string, subject: string, report: string, paylo
 }
 
 async function generateAndSendFullReport(recipient: string, subject: string, payload: ClaimRequest) {
-  const report = await generateReport(payload);
+  const report = sanitizePassengerFacingText(await generateReport(payload));
   return sendWithResend(recipient, subject, report, payload);
 }
 
