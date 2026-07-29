@@ -439,7 +439,7 @@ export default function Home() {
 
   function buildClaimPayload() {
     return {
-      recipientEmail: reportRecipientEmail,
+      recipientEmail: email.trim() || reportRecipientEmail,
       productId: selectedProduct,
       passenger: {
         name,
@@ -1300,7 +1300,14 @@ export default function Home() {
               </div>
               <div className="receipt">
                 <span>寄送信箱</span>
-                <strong>{reportRecipientEmail}</strong>
+                <label className="receipt-email-field">
+                  <input
+                    value={email}
+                    onChange={(event) => setEmail(event.target.value)}
+                    placeholder="請確認收件信箱"
+                    type="email"
+                  />
+                </label>
                 <span>折扣車票</span>
                 <button type="button" onClick={() => setCoupon((value) => !value)}>
                   {coupon ? "試乘優惠已記錄" : "套用試乘優惠"}
@@ -1310,6 +1317,7 @@ export default function Home() {
                 <span>方案參考金額</span>
                 <strong>{formatPrice(total)}</strong>
               </div>
+              <p className="email-confirm-note">付款前請再次確認信箱，完整報告會寄到這裡。</p>
               <label className="check-row">
                 <input
                   type="checkbox"
@@ -1336,7 +1344,7 @@ export default function Home() {
               </label>
               <button
                 className="pay-button"
-                disabled={!privacy || !terms || claimStatus === "sending"}
+                disabled={!privacy || !terms || !isEmailValid || claimStatus === "sending"}
                 onClick={claimFullReport}
               >
                   {claimStatus === "sending" ? "正在產生並寄送報告..." : "寄送完整報告測試"}

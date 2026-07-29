@@ -1467,7 +1467,7 @@ input:focus {
 
 .receipt {
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: 92px minmax(0, 1fr);
   gap: 10px 12px;
   margin: 16px 0;
   padding: 14px;
@@ -1490,6 +1490,26 @@ input:focus {
 
 .receipt strong {
   color: var(--foreground);
+}
+
+.receipt-email-field {
+  display: block;
+  min-width: 0;
+}
+
+.receipt-email-field input {
+  min-height: 38px;
+  padding: 0 10px;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.email-confirm-note {
+  margin: -6px 0 14px;
+  color: #f2d58e;
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.5;
 }
 
 .check-row {
