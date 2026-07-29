@@ -297,11 +297,10 @@ const freeStoryBeats: FreeStoryBeat[] = [
   },
 ];
 
-function StoryBeatPanel({ beat, index }: { beat: FreeStoryBeat; index: number }) {
+function StoryBeatPanel({ beat }: { beat: FreeStoryBeat }) {
   return (
     <article className="story-panel story-insert micro-story" style={{ backgroundImage: `url('${beat.image}')` }}>
       <div className="story-copy lower insert-copy">
-        <b>{String(index + 1).padStart(2, "0")}</b>
         <span>{beat.kicker}</span>
         <h2>{beat.title}</h2>
         {beat.lines.map((line) => (
@@ -1120,8 +1119,8 @@ export default function Home() {
                 </dl>
               </div>
             </article>
-            {freeStoryBeats.slice(0, 2).map((beat, index) => (
-              <StoryBeatPanel key={beat.title} beat={beat} index={index} />
+            {freeStoryBeats.slice(0, 2).map((beat) => (
+              <StoryBeatPanel key={beat.title} beat={beat} />
             ))}
             <article className="story-panel story-insert" style={{ backgroundImage: "url('/comic/story/14-open-first-page.png')" }}>
               <div className="story-copy lower insert-copy">
@@ -1139,8 +1138,8 @@ export default function Home() {
                 {destinyPreview.chapters.seen.headline && <strong>{destinyPreview.chapters.seen.headline}</strong>}
               </div>
             </article>
-            {freeStoryBeats.slice(2, 4).map((beat, index) => (
-              <StoryBeatPanel key={beat.title} beat={beat} index={index + 2} />
+            {freeStoryBeats.slice(2, 4).map((beat) => (
+              <StoryBeatPanel key={beat.title} beat={beat} />
             ))}
             <article className="story-panel story-insert" style={{ backgroundImage: "url('/comic/story/15-rin-window-profile.png')" }}>
               <div className="story-copy lower insert-copy">
@@ -1157,8 +1156,8 @@ export default function Home() {
                 ))}
               </div>
             </article>
-            {freeStoryBeats.slice(4, 6).map((beat, index) => (
-              <StoryBeatPanel key={beat.title} beat={beat} index={index + 4} />
+            {freeStoryBeats.slice(4, 6).map((beat) => (
+              <StoryBeatPanel key={beat.title} beat={beat} />
             ))}
             <article className="story-panel story-insert" style={{ backgroundImage: "url('/comic/story/16-pocket-watch-choice.png')" }}>
               <div className="story-copy lower insert-copy">
@@ -1175,8 +1174,8 @@ export default function Home() {
                 ))}
               </div>
             </article>
-            {freeStoryBeats.slice(6, 8).map((beat, index) => (
-              <StoryBeatPanel key={beat.title} beat={beat} index={index + 6} />
+            {freeStoryBeats.slice(6, 8).map((beat) => (
+              <StoryBeatPanel key={beat.title} beat={beat} />
             ))}
             <article className="story-panel story-insert" style={{ backgroundImage: "url('/comic/story/17-chart-lines-book.png')" }}>
               <div className="story-copy lower insert-copy">
@@ -1197,8 +1196,8 @@ export default function Home() {
                 ))}
               </div>
             </article>
-            {freeStoryBeats.slice(8, 10).map((beat, index) => (
-              <StoryBeatPanel key={beat.title} beat={beat} index={index + 8} />
+            {freeStoryBeats.slice(8, 10).map((beat) => (
+              <StoryBeatPanel key={beat.title} beat={beat} />
             ))}
             <article className="story-panel" style={{ backgroundImage: "url('/comic/story/10-blind-spot.png')" }}>
               <div className="story-copy lower">

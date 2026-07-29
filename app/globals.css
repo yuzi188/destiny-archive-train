@@ -818,21 +818,6 @@ input:focus {
   margin-bottom: 32px;
 }
 
-.micro-story .insert-copy b {
-  display: inline-grid;
-  place-items: center;
-  min-width: 42px;
-  height: 28px;
-  margin-bottom: 12px;
-  color: #0b0805;
-  font-family: var(--archive-title-font);
-  font-size: 13px;
-  font-weight: 900;
-  background: linear-gradient(135deg, var(--gold), #fff1b8);
-  border-radius: 999px;
-  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.46);
-}
-
 .micro-story .insert-copy h2 {
   max-width: 390px;
   margin-inline: auto;
