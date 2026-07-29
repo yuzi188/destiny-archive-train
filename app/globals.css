@@ -802,32 +802,48 @@ input:focus {
 }
 
 .micro-story {
-  min-height: clamp(330px, 54vh, 460px);
-  padding-top: 38px;
-  padding-bottom: 18px;
+  min-height: clamp(520px, 84vh, 720px);
+  padding: 72px 20px 34px;
+  border-block: 1px solid rgba(216, 179, 109, 0.22);
 }
 
 .micro-story::before {
   background:
-    linear-gradient(180deg, rgba(5, 6, 7, 0.02), rgba(5, 6, 7, 0.18) 34%, rgba(5, 6, 7, 0.96)),
-    linear-gradient(90deg, rgba(5, 6, 7, 0.38), transparent 50%, rgba(5, 6, 7, 0.22));
+    linear-gradient(180deg, rgba(5, 6, 7, 0.18), rgba(5, 6, 7, 0.26) 32%, rgba(5, 6, 7, 0.97)),
+    radial-gradient(circle at 50% 72%, rgba(216, 179, 109, 0.18), transparent 28rem),
+    linear-gradient(90deg, rgba(5, 6, 7, 0.58), transparent 50%, rgba(5, 6, 7, 0.42));
 }
 
 .micro-story .insert-copy {
-  margin-bottom: 14px;
+  margin-bottom: 32px;
+}
+
+.micro-story .insert-copy b {
+  display: inline-grid;
+  place-items: center;
+  min-width: 42px;
+  height: 28px;
+  margin-bottom: 12px;
+  color: #0b0805;
+  font-family: var(--archive-title-font);
+  font-size: 13px;
+  font-weight: 900;
+  background: linear-gradient(135deg, var(--gold), #fff1b8);
+  border-radius: 999px;
+  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.46);
 }
 
 .micro-story .insert-copy h2 {
   max-width: 390px;
   margin-inline: auto;
-  font-size: 23px;
-  line-height: 1.32;
+  font-size: 29px;
+  line-height: 1.26;
 }
 
 .micro-story .insert-copy p {
   max-width: 350px;
-  font-size: 15px;
-  line-height: 1.58;
+  font-size: 17px;
+  line-height: 1.68;
 }
 
 .book-panel {
