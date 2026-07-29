@@ -43,19 +43,19 @@ const fallbackRecipient = "q0983120788@gmail.com";
 const reportPlans: Record<ProductId, { name: string; paidPrice: string; targetWords: number; maxOutputTokens: number }> = {
   route: {
     name: "第 13 月台路線報告",
-    paidPrice: "NT$980",
+    paidPrice: "US$9.90",
     targetWords: 3000,
     maxOutputTokens: 7000,
   },
   transfer: {
     name: "轉站套組",
-    paidPrice: "NT$1,580",
+    paidPrice: "US$19.90",
     targetWords: 7000,
     maxOutputTokens: 13000,
   },
   archive: {
     name: "完整班次表",
-    paidPrice: "NT$1,980",
+    paidPrice: "US$29.90",
     targetWords: 10000,
     maxOutputTokens: 18000,
   },

@@ -94,22 +94,22 @@ const products: Record<ProductId, Product> = {
   route: {
     name: "第 13 月台路線報告",
     tag: "單程",
-    oldPrice: 1680,
-    price: 980,
+    oldPrice: 16.8,
+    price: 9.9,
     bullets: ["核心誤點模式", "未來 90 天轉站提醒", "一份行動處方"],
   },
   transfer: {
     name: "轉站套組",
     tag: "推薦",
-    oldPrice: 2860,
-    price: 1580,
+    oldPrice: 28.6,
+    price: 19.9,
     bullets: ["路線報告", "職涯與合作班次", "關係避雷時刻"],
   },
   archive: {
     name: "完整班次表",
     tag: "完整",
-    oldPrice: 3680,
-    price: 1980,
+    oldPrice: 36.8,
+    price: 29.9,
     bullets: ["完整人生路線", "金錢與關係分岔", "30 天轉站清單"],
   },
 };
@@ -134,7 +134,7 @@ const stageOrder: Stage[] = [
 ];
 const gatedVideoStages: Stage[] = ["opening", "enter", "dialogue", "reveal", "teaser", "payTeaser"];
 
-const formatPrice = (value: number) => `NT$${value.toLocaleString("zh-TW")}`;
+const formatPrice = (value: number) => `US$${value.toLocaleString("zh-TW", { maximumFractionDigits: 2 })}`;
 
 const cleanDisplayLine = (value: string) => value.replace(/^白話[：:]\s*/u, "").trim();
 
@@ -412,7 +412,7 @@ export default function Home() {
 
   const displayName = name.trim() || "乘客";
   const selected = products[selectedProduct];
-  const couponValue = coupon ? 180 : 0;
+  const couponValue = coupon ? 0 : 0;
   const total = Math.max(selected.price - couponValue, 0);
   const stageIndex = stageOrder.indexOf(stage);
   const progress = Math.round(((stageIndex + 1) / stageOrder.length) * 100);
@@ -1303,7 +1303,7 @@ export default function Home() {
                 <strong>{reportRecipientEmail}</strong>
                 <span>折扣車票</span>
                 <button type="button" onClick={() => setCoupon((value) => !value)}>
-                  {coupon ? "已套用 -NT$180" : "套用試乘優惠"}
+                  {coupon ? "試乘優惠已記錄" : "套用試乘優惠"}
                 </button>
                 <span>KHQRPay 付款金額</span>
                 <strong>依下一頁 USD 顯示</strong>

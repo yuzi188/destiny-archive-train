@@ -5,9 +5,9 @@ type PaymentRequest = {
 };
 
 const pricesUsd = {
-  route: "1.00",
-  transfer: "49.00",
-  archive: "59.00",
+  route: "9.90",
+  transfer: "19.90",
+  archive: "29.90",
 } as const;
 
 const productNames = {
